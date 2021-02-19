@@ -6,7 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// Do 用switch case對應用戶功能
+// Do 用switch case 對應用戶功能
 func Do(c *gin.Context) {
 	switch c.Param("action") {
 	case "test":
