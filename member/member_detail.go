@@ -20,7 +20,7 @@ func Do(c *gin.Context) {
 		// 使用者登入紀錄
 		v, _ := c.Get("memberID")
 		c.JSON(http.StatusOK, gin.H{
-			"s": 1,
+			"s": 2,
 			"c": v,
 		})
 		return
