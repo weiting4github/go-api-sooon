@@ -11,6 +11,7 @@ import (
 	"go-api-sooon/approuter"
 	"go-api-sooon/config"
 	"go-api-sooon/member"
+	myplay "go-api-sooon/myplayground"
 	"log"
 	"net/http"
 	"os"
@@ -18,8 +19,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gin-contrib/sessions"
-	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
 
 	_ "github.com/joho/godotenv/autoload" // 環境變數套件os.Getenv
@@ -85,7 +84,7 @@ func main() {
 	//透過context.WithTimeout產生一個新的子context，它的特性是有生命週期，這邊是設定10秒
 	//只要超過10秒就會自動發出Done()的訊息
 	ctx := context.Background()
-	c, cancel := context.WithTimeout(ctx, 3*time.Second)
+	c, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
 	fmt.Println("Graceful Shutdown start context.Background()")
 	//使用net/http的shutdown進行關閉http server，參數是上面產生的子context，會有生命週期10秒，
@@ -104,18 +103,28 @@ func main() {
 
 // PLAYGROUND TEST YOUR CODE
 func playground(c *gin.Context) {
-	store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
-	approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))
-	session := sessions.Default(c)
-	session.Set("hello", "world")
-	session.Set("mycookie", "yes done!")
-	// session.Clear()
-	session.Save()
+	// 陣列反轉
+	myplay.ArrReverse([]int{6, 4, 3, 1})
+	// 陣列值2個數字相加等於4 且是唯一解
+	r := myplay.TwoSum([]int{3, 4, 1, 2}, 4)
+	fmt.Println(r)
+	// 費式數列
+	for i := 0; i < 20; i++ {
+		app.DumpAnyLikeABoss(myplay.Fibonacci1()(i))
+	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"s":    1,
-		"msg":  session.Get("hello"),
-		"msg2": session.Get("mycookie"),
-	})
+	// store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
+	// approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))
+	// session := sessions.Default(c)
+	// session.Set("hello", "world")
+	// session.Set("mycookie", "yes done!")
+	// // session.Clear()
+	// session.Save()
+
+	// c.JSON(http.StatusOK, gin.H{
+	// 	"s":    1,
+	// 	"msg":  session.Get("hello"),
+	// 	"msg2": session.Get("mycookie"),
+	// })
 	return
 }
