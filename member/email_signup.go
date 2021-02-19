@@ -88,6 +88,7 @@ func NewMember(c *gin.Context) {
 		})
 		return
 	}
+
 	defer stmtIns.Close()
 
 	result, err := stmtIns.Exec(reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
