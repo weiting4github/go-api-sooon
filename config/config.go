@@ -58,7 +58,7 @@ func CreateJWTClaims(memberID int64, email string, role string, issuer string) (
 		MemberID: memberID,
 		StandardClaims: jwt.StandardClaims{
 			Audience:  email,
-			ExpiresAt: now.Add(90 * time.Second).Unix(), // 過期時間
+			ExpiresAt: now.Add(3600 * time.Second).Unix(), // 過期時間
 			Id:        jwtID,
 			IssuedAt:  now.Unix(), // 發行時間
 			Issuer:    issuer,

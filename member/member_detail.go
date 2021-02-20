@@ -58,7 +58,9 @@ func Do(c *gin.Context) {
 		}
 		defer rows.Close()
 
+		var log []map[string]interface{}
 		for rows.Next() {
+			r := make(map[string]interface{})
 			var _id int
 			if err := rows.Scan(&_id); err != nil {
 				c.JSON(http.StatusOK, gin.H{
@@ -67,12 +69,14 @@ func Do(c *gin.Context) {
 					"errMsg":  err.Error(),
 				})
 			}
-			app.DumpAnyLikeABoss(_id)
+
+			r["memberID"] = _id
+			log = append(log, r)
 		}
 
 		c.JSON(http.StatusOK, gin.H{
-			"s": 1,
-			"c": rows,
+			"s":    1,
+			"data": log,
 		})
 		return
 	}
