@@ -37,7 +37,7 @@ func Do(c *gin.Context) {
 		}
 		defer db.Close()
 
-		stmt, err := db.Prepare("SELECT `member_id` FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		stmt, err := db.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
@@ -61,8 +61,9 @@ func Do(c *gin.Context) {
 		var log []map[string]interface{}
 		for rows.Next() {
 			r := make(map[string]interface{})
-			var _id int
-			if err := rows.Scan(&_id); err != nil {
+			var _id, _loginTS int
+			var _device, _createDt string
+			if err := rows.Scan(&_id, &_device, &_loginTS, &_createDt); err != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"s":       -1, // -9系統層級 APP不顯示錯誤訊息
 					"errCode": app.DumpErrorCode(loginCodePrefix),
@@ -71,6 +72,9 @@ func Do(c *gin.Context) {
 			}
 
 			r["memberID"] = _id
+			r["device"] = _device
+			r["loginTs"] = _loginTS
+			r["createDt"] = _createDt
 			log = append(log, r)
 		}
 
