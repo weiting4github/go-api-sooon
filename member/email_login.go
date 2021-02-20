@@ -44,16 +44,16 @@ func Login(c *gin.Context) {
 	}
 
 	// db連線
-	db, err := config.NewDBConnect()
-	if err != nil {
-		c.JSON(http.StatusServiceUnavailable, gin.H{
-			"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-			"errCode": app.DumpErrorCode(loginCodePrefix),
-			"errMsg":  err.Error(),
-		})
-		return
-	}
-	defer db.Close()
+	// db, err := config.NewDBConnect()
+	// if err != nil {
+	// 	c.JSON(http.StatusServiceUnavailable, gin.H{
+	// 		"s":       -9, // -9系統層級 APP不顯示錯誤訊息
+	// 		"errCode": app.DumpErrorCode(loginCodePrefix),
+	// 		"errMsg":  err.Error(),
+	// 	})
+	// 	return
+	// }
+	// defer db.Close()
 
 	// 查email
 	ch := make(chan int64) // member_id
@@ -62,7 +62,7 @@ func Login(c *gin.Context) {
 	var email, pwd, salt string
 	var memberID int64
 	go func() {
-		stmt, err := db.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+		stmt, err := config.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
 		defer stmt.Close()
 		if err != nil {
 			errch <- err // 錯誤跳出
@@ -85,7 +85,7 @@ func Login(c *gin.Context) {
 		}
 
 		{ // 更新使用者登入Log
-			stmt, err := db.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
+			stmt, err := config.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())

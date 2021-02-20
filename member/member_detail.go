@@ -25,19 +25,7 @@ func Do(c *gin.Context) {
 		// 使用者登入紀錄
 		memberID, _ := c.Get("memberID")
 
-		// sql
-		db, err := config.NewDBConnect()
-		if err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(loginCodePrefix),
-				"errMsg":  err.Error(),
-			})
-			return
-		}
-		defer db.Close()
-
-		stmt, err := db.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		stmt, err := config.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息

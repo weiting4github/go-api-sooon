@@ -19,6 +19,22 @@ import (
 
 const configCodePrefix = "CNF00"
 
+// DB singleton instance connection pool
+var DB *sql.DB
+
+func init() {
+	dbLoginUser := os.Getenv("DB_USER")
+	dbLoginPassWord := os.Getenv("DB_PWD")
+	// fmt.Printf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME"))
+	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME")))
+	err = db.Ping()
+	if err != nil {
+		fmt.Printf("DBConnect: %s", err.Error())
+		panic(err.Error())
+	}
+	DB = db
+}
+
 /*NewDBConnect 連線DB func */
 func NewDBConnect() (*sql.DB, error) {
 	dbLoginUser := os.Getenv("DB_USER")
@@ -30,6 +46,7 @@ func NewDBConnect() (*sql.DB, error) {
 		fmt.Printf("DBConnect: %s", err.Error())
 		return nil, err
 	}
+	DB = db
 	return db, nil
 }
 
