@@ -2,6 +2,7 @@ package member
 
 import (
 	"database/sql"
+	"fmt"
 	"go-api-sooon/app"
 	"go-api-sooon/config"
 	"net/http"
@@ -11,6 +12,7 @@ import (
 
 // Do 用switch case 對應用戶功能
 func Do(c *gin.Context) {
+	fmt.Println(c.Param("action"))
 	switch c.Param("action") {
 	case "test":
 		v, _ := c.Get("memberID")
@@ -35,7 +37,7 @@ func Do(c *gin.Context) {
 		}
 		defer db.Close()
 
-		stmt, err := db.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		stmt, err := db.Prepare("SELECT `member_id` FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
@@ -44,7 +46,7 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
-		stmt.Close()
+		defer stmt.Close()
 		rows, err := stmt.Query(memberID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
@@ -54,7 +56,19 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
-		rows.Close()
+		defer rows.Close()
+
+		for rows.Next() {
+			var _id int
+			if err := rows.Scan(&_id); err != nil {
+				c.JSON(http.StatusOK, gin.H{
+					"s":       -1, // -9系統層級 APP不顯示錯誤訊息
+					"errCode": app.DumpErrorCode(loginCodePrefix),
+					"errMsg":  err.Error(),
+				})
+			}
+			app.DumpAnyLikeABoss(_id)
+		}
 
 		c.JSON(http.StatusOK, gin.H{
 			"s": 1,
