@@ -44,7 +44,7 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
-
+		stmt.Close()
 		rows, err := stmt.Query(memberID)
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
@@ -54,6 +54,7 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
+		rows.Close()
 
 		c.JSON(http.StatusOK, gin.H{
 			"s": 1,
