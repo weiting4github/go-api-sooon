@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"go-api-sooon/app"
-	"go-api-sooon/config"
+	"go-api-sooon/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -25,7 +25,8 @@ func Do(c *gin.Context) {
 		// 使用者登入紀錄
 		memberID, _ := c.Get("memberID")
 
-		stmt, err := config.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		// stmt, err := models.DBM.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		stmt, err := models.DBM.SelMemberLoginLog()
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息

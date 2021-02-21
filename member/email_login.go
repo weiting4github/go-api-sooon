@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"go-api-sooon/app"
 	"go-api-sooon/config"
+
+	"go-api-sooon/models"
 	"net/http"
 	"time"
 
@@ -62,7 +64,8 @@ func Login(c *gin.Context) {
 	var email, pwd, salt string
 	var memberID int64
 	go func() {
-		stmt, err := config.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+		// stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+		stmt, err := models.DBM.SelMemberEmail()
 		defer stmt.Close()
 		if err != nil {
 			errch <- err // 錯誤跳出
@@ -85,7 +88,8 @@ func Login(c *gin.Context) {
 		}
 
 		{ // 更新使用者登入Log
-			stmt, err := config.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
+			// stmt, err := models.DBM.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
+			stmt, err := models.DBM.NewMemberloginLog()
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
