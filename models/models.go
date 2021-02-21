@@ -16,11 +16,6 @@ type DBManager struct {
 	DB *sql.DB
 }
 
-// ErrorCodePrifix ...
-type ErrorCodePrifix struct {
-	signupCodePrefix string
-}
-
 const modelsCodePrefix = "MOD00"
 
 func init() {
