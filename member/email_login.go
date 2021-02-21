@@ -45,18 +45,6 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// db連線
-	// db, err := config.NewDBConnect()
-	// if err != nil {
-	// 	c.JSON(http.StatusServiceUnavailable, gin.H{
-	// 		"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-	// 		"errCode": app.DumpErrorCode(loginCodePrefix),
-	// 		"errMsg":  err.Error(),
-	// 	})
-	// 	return
-	// }
-	// defer db.Close()
-
 	// 查email
 	ch := make(chan int64) // member_id
 	errch := make(chan error)
@@ -107,7 +95,7 @@ func Login(c *gin.Context) {
 
 	go func() {
 		_memberID := <-ch
-		{ // 用戶語系放到 sessions
+		{ // 更新sessions
 			session := sessions.Default(c)
 			lang := c.Request.FormValue("lang")
 			if len(lang) <= 0 {
@@ -118,7 +106,6 @@ func Login(c *gin.Context) {
 					lang = "zh"
 				}
 			}
-
 			session.Set(_memberID, config.MemberSessions{
 				LoginTs: time.Now().Unix(),
 				Lang:    lang,
