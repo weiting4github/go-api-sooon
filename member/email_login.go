@@ -166,7 +166,7 @@ func Login(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"s":       -9,
 			"errCode": app.DumpErrorCode(loginCodePrefix),
-			"errMsg":  errors.New("Timeout"),
+			"errMsg":  errors.New("Timeout").Error(),
 		})
 		return
 		// default:

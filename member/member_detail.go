@@ -12,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const detailCodePrefix = "MEM02"
+
 // Do 用switch case 對應用戶功能
 func Do(c *gin.Context) {
 	fmt.Println(c.Param("action"))
@@ -32,8 +34,8 @@ func Do(c *gin.Context) {
 		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(int64) != chkMemberID {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(loginCodePrefix),
-				"errMsg":  errors.New("session memberID lost"),
+				"errCode": app.DumpErrorCode(detailCodePrefix),
+				"errMsg":  errors.New("session memberID lost").Error(),
 			})
 			return
 		}
