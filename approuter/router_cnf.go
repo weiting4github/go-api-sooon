@@ -23,9 +23,6 @@ func init() {
 	GinEngine, GinRouterGroup = switchRouter(gin.Mode())
 }
 
-// Session Manager
-var Session *sessions.Session
-
 func switchRouter(ginMode string) (*gin.Engine, *gin.RouterGroup) {
 	var engine *gin.Engine
 	var group *gin.RouterGroup
