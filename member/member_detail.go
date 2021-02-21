@@ -2,10 +2,12 @@ package member
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"go-api-sooon/app"
 	"go-api-sooon/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,8 +25,18 @@ func Do(c *gin.Context) {
 		return
 	case "loginHistory":
 		// 使用者登入紀錄
-		memberID, _ := c.Get("memberID")
+		memberID := c.Param("mid")
 
+		// 自己才能看自己紀錄
+		chkMemberID, _ := strconv.ParseInt(memberID, 10, 64)
+		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(int64) != chkMemberID {
+			c.JSON(http.StatusServiceUnavailable, gin.H{
+				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
+				"errCode": app.DumpErrorCode(loginCodePrefix),
+				"errMsg":  errors.New("session memberID lost"),
+			})
+			return
+		}
 		// stmt, err := models.DBM.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
 		stmt, err := models.DBM.SelMemberLoginLog()
 		if err != nil {

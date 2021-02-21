@@ -56,7 +56,7 @@ func main() {
 	approuter.GinRouterGroup.POST("/login/email", member.Login)
 	approuter.GinRouterGroup.Use(config.JWTAuth)
 	{
-		approuter.GinRouterGroup.GET("/member/:action", member.Do)
+		approuter.GinRouterGroup.GET("/member/:action/:mid", member.Do)
 	}
 
 	// approuter.GinEngine.Run(":3000")
