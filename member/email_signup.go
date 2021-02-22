@@ -33,8 +33,8 @@ type RegInfo struct {
 	// ProfileShot string `form:"profileShot" binding:"required"` /* 大頭貼 */
 }
 
-// NewMember POST參數
-func NewMember(c *gin.Context) {
+// NewMemberReg POST參數
+func NewMemberReg(c *gin.Context) {
 	var reginfo RegInfo
 	err := c.ShouldBind(&reginfo)
 	if err != nil {

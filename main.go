@@ -50,7 +50,7 @@ func main() {
 	})
 
 	// 用戶註冊
-	approuter.GinRouterGroup.POST("/signup", member.NewMember)
+	approuter.GinRouterGroup.POST("/signup", member.NewMemberReg)
 
 	// email登入
 	approuter.GinRouterGroup.POST("/login/email", member.Login)
