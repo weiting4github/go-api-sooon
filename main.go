@@ -12,6 +12,7 @@ import (
 	"go-api-sooon/config"
 	"go-api-sooon/member"
 	"log"
+	"math/big"
 	"net"
 	"net/http"
 	"os"
@@ -103,8 +104,10 @@ func main() {
 
 // PLAYGROUND TEST YOUR CODE
 func playground(c *gin.Context) {
-	fmt.Println(net.ParseIP("192.168.1.2"))
-	// fmt.Println(net.IPv4(byte("192"), []byte("192"), []byte("192"), []byte("192")))
+	ip := net.ParseIP("2001:db8::68")
+	bint := ipv6ToInt(ip)
+
+	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
 	// 陣列反轉
 	// myplay.ArrReverse([]int{6, 4, 3, 1})
 	// 陣列值2個數字相加等於4 且是唯一解
@@ -125,7 +128,13 @@ func playground(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"s":      1,
-		"result": net.ParseIP("192.168.1.2"),
+		"result": bint,
 	})
 	return
+}
+
+func ipv6ToInt(IPv6Addr net.IP) *big.Int {
+	IPv6Int := big.NewInt(0)
+	IPv6Int.SetBytes(IPv6Addr)
+	return IPv6Int
 }

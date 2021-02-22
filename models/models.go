@@ -13,7 +13,9 @@ var DBM *DBManager
 
 // DBManager sqldb 管理器
 type DBManager struct {
-	DB *sql.DB
+	DB    *sql.DB
+	log   *log.Logger
+	query string // debug用
 }
 
 const modelsCodePrefix = "MOD00"
@@ -22,13 +24,15 @@ func init() {
 	dbLoginUser := os.Getenv("DB_USER")
 	dbLoginPassWord := os.Getenv("DB_PWD")
 	// fmt.Printf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME"))
+	// 這只是連結還沒開始連線，可以先用Ping做測試連線
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME")))
 	err = db.Ping()
 	if err != nil {
 		fmt.Printf("DBConnect: %s", err.Error())
 		panic(err.Error())
 	}
-	DBM = &DBManager{DB: db}
+	l := log.New(os.Stdout, "[sql]", log.LstdFlags)
+	DBM = &DBManager{DB: db, log: l}
 
 }
 
@@ -44,7 +48,7 @@ func (m *DBManager) NewDBConnect() {
 
 	if err := db.Ping(); err != nil {
 		fmt.Printf("DBConnect: %s", err.Error())
-
 	}
-	DBM = &DBManager{DB: db}
+	l := log.New(os.Stdout, "[sql]", log.LstdFlags)
+	DBM = &DBManager{DB: db, log: l}
 }

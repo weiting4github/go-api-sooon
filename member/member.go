@@ -1,11 +1,15 @@
 // Package member ...
 package member
 
+import (
+	"net"
+)
+
 // Member defines member contents
 type Member struct {
 	id       uint64
 	email    string
-	ip       string
+	ip       net.IP
 	nickName string
 	birthTs  uint32 /* 生日 */
 	country  uint16 /* 註冊國家 預設1台灣 */
@@ -23,6 +27,6 @@ func NewMember(id uint64, email string) *Member {
 	}
 }
 
-func (m *Member) Text() string {
-	return string(m.id)
-}
+// func (m *Member) Text() string {
+// 	return string(m.id)
+// }

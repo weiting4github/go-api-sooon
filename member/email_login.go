@@ -52,8 +52,7 @@ func Login(c *gin.Context) {
 	var email, pwd, salt string
 	var memberID uint64
 	go func() {
-		// stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
-		stmt, err := models.DBM.SelMemberEmail()
+		stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
 		defer stmt.Close()
 		if err != nil {
 			errch <- err // 錯誤跳出
@@ -76,15 +75,14 @@ func Login(c *gin.Context) {
 		}
 
 		{ // 更新使用者登入Log
-			// stmt, err := models.DBM.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
-			stmt, err := models.DBM.NewMemberloginLog()
+			stmt, err := models.DBM.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
 				return
 			}
 			defer stmt.Close()
-			_, err = stmt.Exec(memberID, loginBody.Device, time.Now().Unix())
+			_, err = stmt.Exec(memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())

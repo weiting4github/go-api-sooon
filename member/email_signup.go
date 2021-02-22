@@ -53,8 +53,7 @@ func NewMemberReg(c *gin.Context) {
 	h.Write([]byte(reginfo.Pwd + salt))
 	hashPWD := fmt.Sprintf("%x", h.Sum(nil))
 
-	// stmtIns, err := models.DBM.DB.Prepare("INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)")
-	stmtIns, err := models.DBM.NewMemberPrepare()
+	stmtIns, err := models.DBM.DB.Prepare("INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)")
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":        -9,

@@ -39,8 +39,7 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
-		// stmt, err := models.DBM.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
-		stmt, err := models.DBM.SelMemberLoginLog()
+		stmt, err := models.DBM.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
