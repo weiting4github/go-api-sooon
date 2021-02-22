@@ -53,7 +53,9 @@ func NewMemberReg(c *gin.Context) {
 	h.Write([]byte(reginfo.Pwd + salt))
 	hashPWD := fmt.Sprintf("%x", h.Sum(nil))
 
-	stmtIns, err := models.DBM.DB.Prepare("INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)")
+	prepareStr := "INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)"
+	stmtIns, err := models.DBM.DB.Prepare(prepareStr)
+	defer stmtIns.Close()
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":        -9,
@@ -62,8 +64,6 @@ func NewMemberReg(c *gin.Context) {
 		})
 		return
 	}
-
-	defer stmtIns.Close()
 
 	result, err := stmtIns.Exec(reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
 	if err != nil {
@@ -74,6 +74,8 @@ func NewMemberReg(c *gin.Context) {
 		})
 		return
 	}
+	// log to stdout
+	models.DBM.SQLDebug(prepareStr, reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
 
 	newMember, err := result.LastInsertId()
 	if err != nil {

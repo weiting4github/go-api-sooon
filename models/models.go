@@ -13,9 +13,8 @@ var DBM *DBManager
 
 // DBManager sqldb 管理器
 type DBManager struct {
-	DB    *sql.DB
-	log   *log.Logger
-	query string // debug用
+	DB  *sql.DB
+	log *log.Logger
 }
 
 const modelsCodePrefix = "MOD00"
@@ -51,4 +50,11 @@ func (m *DBManager) NewDBConnect() {
 	}
 	l := log.New(os.Stdout, "[sql]", log.LstdFlags)
 	DBM = &DBManager{DB: db, log: l}
+}
+
+// SQLDebug 印出 sql statement
+func (m *DBManager) SQLDebug(args ...interface{}) {
+	fmt.Println("")
+	m.log.Println(args...)
+	fmt.Println("")
 }

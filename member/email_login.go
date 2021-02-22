@@ -52,30 +52,36 @@ func Login(c *gin.Context) {
 	var email, pwd, salt string
 	var memberID uint64
 	go func() {
-		stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
-		defer stmt.Close()
-		if err != nil {
-			errch <- err // 錯誤跳出
-			return
-		}
+		{
+			prepareStr := "SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?"
+			stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+			defer stmt.Close()
+			if err != nil {
+				errch <- err // 錯誤跳出
+				return
+			}
 
-		err = stmt.QueryRow(loginBody.Email).Scan(&memberID, &email, &pwd, &salt)
-		if err != nil && err != sql.ErrNoRows {
-			errch <- err // 錯誤跳出
-			close(errch)
-			return
-		}
+			err = stmt.QueryRow(loginBody.Email).Scan(&memberID, &email, &pwd, &salt)
+			if err != nil && err != sql.ErrNoRows {
+				errch <- err // 錯誤跳出
+				close(errch)
+				return
+			}
+			// log to stdout
+			models.DBM.SQLDebug(prepareStr, memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
 
-		// 驗證密碼
-		h := sha256.New()
-		h.Write([]byte(loginBody.RawPWD + salt))
-		if pwd == fmt.Sprintf("%x", h.Sum(nil)) {
-			ch <- memberID // 傳給jwt payload
-			close(ch)
+			// 驗證密碼
+			h := sha256.New()
+			h.Write([]byte(loginBody.RawPWD + salt))
+			if pwd == fmt.Sprintf("%x", h.Sum(nil)) {
+				ch <- memberID // 傳給jwt payload
+				close(ch)
+			}
 		}
-
-		{ // 更新使用者登入Log
-			stmt, err := models.DBM.DB.Prepare("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`) VALUES (?, ?, ?)")
+		// 更新使用者登入Log
+		{
+			prepareStr := "INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`, `ip`) VALUES (?, ?, ?, ?)"
+			stmt, err := models.DBM.DB.Prepare(prepareStr)
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
@@ -88,6 +94,8 @@ func Login(c *gin.Context) {
 				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
 				return
 			}
+			// log to stdout
+			models.DBM.SQLDebug(prepareStr, memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
 		}
 	}()
 

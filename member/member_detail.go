@@ -39,43 +39,49 @@ func Do(c *gin.Context) {
 			})
 			return
 		}
-		stmt, err := models.DBM.DB.Prepare("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		prepareStr := "SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?"
+		stmt, err := models.DBM.DB.Prepare(prepareStr)
+		defer stmt.Close()
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(loginCodePrefix),
+				"errCode": app.DumpErrorCode(detailCodePrefix),
 				"errMsg":  err.Error(),
 			})
 			return
 		}
-		defer stmt.Close()
+
 		rows, err := stmt.Query(memberID)
+		defer rows.Close()
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(loginCodePrefix),
+				"errCode": app.DumpErrorCode(detailCodePrefix),
 				"errMsg":  err.Error(),
 			})
 			return
 		}
-		defer rows.Close()
+		// log to stdout
+		models.DBM.SQLDebug(prepareStr, memberID)
 
 		var log []map[string]interface{}
 		for rows.Next() {
 			r := make(map[string]interface{})
 			var _id, _loginTS int
-			var _device, _createDt string
-			if err := rows.Scan(&_id, &_device, &_loginTS, &_createDt); err != nil {
+			var _device, _createDt, _ip string
+			if err := rows.Scan(&_id, &_device, &_loginTS, &_ip, &_createDt); err != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"s":       -1, // -9系統層級 APP不顯示錯誤訊息
-					"errCode": app.DumpErrorCode(loginCodePrefix),
+					"errCode": app.DumpErrorCode(detailCodePrefix),
 					"errMsg":  err.Error(),
 				})
+				return
 			}
 
 			r["memberID"] = _id
 			r["device"] = _device
 			r["loginTs"] = _loginTS
+			r["ip"] = _ip
 			r["createDt"] = _createDt
 			log = append(log, r)
 		}
