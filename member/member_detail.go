@@ -30,8 +30,8 @@ func Do(c *gin.Context) {
 		memberID := c.Param("mid")
 
 		// 自己才能看自己紀錄
-		chkMemberID, _ := strconv.ParseInt(memberID, 10, 64)
-		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(int64) != chkMemberID {
+		chkMemberID, _ := strconv.ParseUint(memberID, 10, 64)
+		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(uint64) != chkMemberID {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
 				"errCode": app.DumpErrorCode(detailCodePrefix),

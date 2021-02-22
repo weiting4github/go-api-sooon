@@ -11,8 +11,8 @@ import (
 	"go-api-sooon/approuter"
 	"go-api-sooon/config"
 	"go-api-sooon/member"
-	myplay "go-api-sooon/myplayground"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
@@ -103,15 +103,17 @@ func main() {
 
 // PLAYGROUND TEST YOUR CODE
 func playground(c *gin.Context) {
+	fmt.Println(net.ParseIP("192.168.1.2"))
+	// fmt.Println(net.IPv4(byte("192"), []byte("192"), []byte("192"), []byte("192")))
 	// 陣列反轉
-	myplay.ArrReverse([]int{6, 4, 3, 1})
+	// myplay.ArrReverse([]int{6, 4, 3, 1})
 	// 陣列值2個數字相加等於4 且是唯一解
-	r := myplay.TwoSum([]int{3, 4, 1, 2}, 4)
-	fmt.Println(r)
+	// r := myplay.TwoSum([]int{3, 4, 1, 2}, 4)
+	// fmt.Println(r)
 	// 費式數列
-	for i := 0; i < 20; i++ {
-		app.DumpAnyLikeABoss(myplay.Fibonacci1()(i))
-	}
+	// for i := 0; i < 20; i++ {
+	// 	app.DumpAnyLikeABoss(myplay.Fibonacci1()(i))
+	// }
 
 	// store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
 	// approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))
@@ -121,10 +123,9 @@ func playground(c *gin.Context) {
 	// // session.Clear()
 	// session.Save()
 
-	// c.JSON(http.StatusOK, gin.H{
-	// 	"s":    1,
-	// 	"msg":  session.Get("hello"),
-	// 	"msg2": session.Get("mycookie"),
-	// })
+	c.JSON(http.StatusOK, gin.H{
+		"s":      1,
+		"result": net.ParseIP("192.168.1.2"),
+	})
 	return
 }

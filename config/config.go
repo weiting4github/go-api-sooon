@@ -23,7 +23,7 @@ const configCodePrefix = "CNF00"
 type JWTClaims struct {
 	Email    string `json:"Email"`
 	Role     string `json:"Role"`
-	MemberID int64  `json:"MemberID"`
+	MemberID uint64 `json:"MemberID"`
 	Lang     string `json:"Lang"`
 	jwt.StandardClaims
 }
@@ -32,7 +32,7 @@ type JWTClaims struct {
 var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 // CreateJWTClaims 簽發JWT token
-func CreateJWTClaims(memberID int64, email string, role string, issuer string) (JWTClaims, string, error) {
+func CreateJWTClaims(memberID uint64, email string, role string, issuer string) (JWTClaims, string, error) {
 	now := time.Now()
 	jwtID := email + strconv.FormatInt(now.Unix(), 10)
 

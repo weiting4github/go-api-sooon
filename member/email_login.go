@@ -46,11 +46,11 @@ func Login(c *gin.Context) {
 	}
 
 	// 查email
-	ch := make(chan int64) // member_id
+	ch := make(chan uint64) // member_id
 	errch := make(chan error)
 	tokenString := make(chan string) // jwt
 	var email, pwd, salt string
-	var memberID int64
+	var memberID uint64
 	go func() {
 		// stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
 		stmt, err := models.DBM.SelMemberEmail()
@@ -136,9 +136,10 @@ func Login(c *gin.Context) {
 			MessageID: "登入成功",
 		})
 		c.JSON(http.StatusOK, gin.H{
-			"s":     1,
-			"token": _token,
-			"msg":   translation,
+			"s":      1,
+			"member": memberID,
+			"token":  _token,
+			"msg":    translation,
 		})
 		return
 	case err = <-errch:
