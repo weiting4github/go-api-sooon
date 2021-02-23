@@ -67,8 +67,8 @@ func DumpErrorCode(codePrefix string) string {
 	return fmt.Sprintf("%s_%d", codePrefix, fileLine)
 }
 
-// DumpAnyLikeABoss dumping your stuff like a boss
-func DumpAnyLikeABoss(i interface{}) {
+// DumpAnything dumping your stuff like a boss
+func DumpAnything(i interface{}) {
 	fmt.Println("-------------------------")
 	fmt.Printf("%#v\n", i)
 	fmt.Println("-------------------------")

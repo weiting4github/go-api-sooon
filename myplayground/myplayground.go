@@ -9,6 +9,9 @@ import "go-api-sooon/app"
 
 // 	"github.com/gomodule/redigo/redis"
 // )
+// type print func() app.DumpAnyLikeABoss
+type play struct {
+}
 
 // TwoSum 這題主要目的在於練習HashMap/Dictionary的應用。
 // 只要每一次從map中確認當下target-num是否在map中，
@@ -17,15 +20,24 @@ import "go-api-sooon/app"
 // 依此流程，最壞的狀況整個array遍歷後，就可以得到答案。
 // key, value對調放進map, 目標值-陣列value的差值 存在於 map的key 就可以取得 index
 func TwoSum(nums []int, target int) []int {
-	mymap := make(map[int]int)
+	revereMap := make(map[int]int)
 	for i := 0; i < len(nums); i++ {
-		j, ok := mymap[target-nums[i]] // target-nums[i] 差值即是答案取得j即是原始num的index
-		if ok {
-			result := []int{j, i} // 答案回傳index
-			return result
+		// v := target - nums[i]
+		app.DumpAnything(revereMap)
+		if j, ok := revereMap[target-nums[i]]; ok {
+			return []int{j, i}
 		}
-		mymap[nums[i]] = i
+		revereMap[nums[i]] = i
 	}
+	// mymap := make(map[int]int)
+	// for i := 0; i < len(nums); i++ {
+	// 	j, ok := mymap[target-nums[i]] // target-nums[i] 差值即是答案取得j即是原始num的index
+	// 	if ok {
+	// 		result := []int{j, i} // 答案回傳index
+	// 		return result
+	// 	}
+	// 	mymap[nums[i]] = i
+	// }
 	result := []int{-1, -1}
 	return result
 }
@@ -38,7 +50,7 @@ func ArrReverse(in []int) {
 		j := len(in) - i - 1        // j與i為頭尾對應index
 		in[i], in[j] = in[j], in[i] // 對調
 	}
-	app.DumpAnyLikeABoss(in)
+	app.DumpAnything(in)
 }
 
 // Fibonacci1 費氏數列
@@ -54,4 +66,33 @@ func Fibonacci1() func(int) int {
 		}
 		return Fibonacci1()(x-2) + Fibonacci1()(x-1) // 前兩個數字相加
 	}
+}
+
+func reverse(x int) int {
+	var MaxInt int32 = 2147483647
+
+	if x > int(MaxInt) || x < -int(MaxInt) {
+		return 0
+	}
+
+	tmp := 0
+	run := x
+	if x < 0 {
+		run = -run
+	}
+	for run > 0 {
+		tmp *= 10
+		digit := run % 10
+		tmp += digit
+		run /= 10
+	}
+
+	if tmp > int(MaxInt) {
+		return 0
+	}
+
+	if x < 0 {
+		return -tmp
+	}
+	return tmp
 }

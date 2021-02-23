@@ -11,6 +11,7 @@ import (
 	"go-api-sooon/approuter"
 	"go-api-sooon/config"
 	"go-api-sooon/member"
+	m "go-api-sooon/myplayground"
 	"log"
 	"math/big"
 	"net"
@@ -104,15 +105,17 @@ func main() {
 
 // PLAYGROUND TEST YOUR CODE
 func playground(c *gin.Context) {
-	ip := net.ParseIP("2001:db8::68")
-	bint := ipv6ToInt(ip)
-
+	// ip := net.ParseIP("2001:db8::68")
+	// bint := ipv6ToInt(ip)
 	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
+
+	// 陣列值2個數字相加等於4 且是唯一解
+	r := m.TwoSum([]int{3, 4, 1, 2}, 4)
+	fmt.Println(r)
+
 	// 陣列反轉
 	// myplay.ArrReverse([]int{6, 4, 3, 1})
-	// 陣列值2個數字相加等於4 且是唯一解
-	// r := myplay.TwoSum([]int{3, 4, 1, 2}, 4)
-	// fmt.Println(r)
+
 	// 費式數列
 	// for i := 0; i < 20; i++ {
 	// 	app.DumpAnyLikeABoss(myplay.Fibonacci1()(i))
@@ -127,8 +130,7 @@ func playground(c *gin.Context) {
 	// session.Save()
 
 	c.JSON(http.StatusOK, gin.H{
-		"s":      1,
-		"result": bint,
+		"s": 1,
 	})
 	return
 }
