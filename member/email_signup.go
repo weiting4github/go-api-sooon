@@ -41,13 +41,13 @@ func NewMemberReg(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"s":       -9,
 			"errMsg":  err.Error(),
-			"errCode": app.DumpErrorCode(signupCodePrefix),
+			"errCode": app.SFunc.DumpErrorCode(signupCodePrefix),
 		})
 		return
 	}
 
 	// db salt column
-	salt := app.NewMd5String(3)
+	salt := app.SFunc.NewMd5String(3)
 	// sha256雜湊
 	h := sha256.New()
 	h.Write([]byte(reginfo.Pwd + salt))
@@ -59,7 +59,7 @@ func NewMemberReg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":        -9,
-			"err_code": app.DumpErrorCode(signupCodePrefix),
+			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
 			"err_msg":  err.Error(),
 		})
 		return
@@ -69,7 +69,7 @@ func NewMemberReg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":        -9,
-			"err_code": app.DumpErrorCode(signupCodePrefix),
+			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
 			"err_msg":  err.Error(),
 		})
 		return
@@ -81,7 +81,7 @@ func NewMemberReg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":        -9,
-			"err_code": app.DumpErrorCode(signupCodePrefix),
+			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
 			"err_msg":  err.Error(),
 		})
 		return

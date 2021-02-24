@@ -39,7 +39,7 @@ func Login(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusOK, gin.H{
 			"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-			"errCode": app.DumpErrorCode(loginCodePrefix),
+			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
 			"errMsg":  err.Error(),
 		})
 		return
@@ -84,14 +84,14 @@ func Login(c *gin.Context) {
 			stmt, err := models.DBM.DB.Prepare(prepareStr)
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
-				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
+				fmt.Println(app.SFunc.DumpErrorCode(loginCodePrefix) + err.Error())
 				return
 			}
 			defer stmt.Close()
 			_, err = stmt.Exec(memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
-				fmt.Println(app.DumpErrorCode(loginCodePrefix) + err.Error())
+				fmt.Println(app.SFunc.DumpErrorCode(loginCodePrefix) + err.Error())
 				return
 			}
 			// log to stdout
@@ -125,7 +125,7 @@ func Login(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"s":       -9,
-				"errCode": app.DumpErrorCode(loginCodePrefix),
+				"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
 				"errMsg":  err.Error(),
 			})
 			return
@@ -152,14 +152,14 @@ func Login(c *gin.Context) {
 		// DB initialization failed
 		c.JSON(http.StatusOK, gin.H{
 			"s":       -9,
-			"errCode": app.DumpErrorCode(loginCodePrefix),
+			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
 			"errMsg":  err.Error(),
 		})
 		return
 	case <-time.After(time.Second * 3):
 		c.JSON(http.StatusOK, gin.H{
 			"s":       -9,
-			"errCode": app.DumpErrorCode(loginCodePrefix),
+			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
 			"errMsg":  errors.New("Timeout").Error(),
 		})
 		return
@@ -167,7 +167,7 @@ func Login(c *gin.Context) {
 		// 	// DB initialization failed
 		// 	c.JSON(http.StatusOK, gin.H{
 		// 		"s":       -9,
-		// 		"errCode": app.DumpErrorCode(loginCodePrefix),
+		// 		"errCode": app.SF.DumpErrorCode(loginCodePrefix),
 		// 		"errMsg":  "DB initialization failed",
 		// 	})
 	}

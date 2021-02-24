@@ -34,7 +34,7 @@ func Do(c *gin.Context) {
 		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(uint64) != chkMemberID {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(detailCodePrefix),
+				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
 				"errMsg":  errors.New("session memberID lost").Error(),
 			})
 			return
@@ -45,7 +45,7 @@ func Do(c *gin.Context) {
 		if err != nil {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(detailCodePrefix),
+				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
 				"errMsg":  err.Error(),
 			})
 			return
@@ -56,7 +56,7 @@ func Do(c *gin.Context) {
 		if err != nil && err != sql.ErrNoRows {
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.DumpErrorCode(detailCodePrefix),
+				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
 				"errMsg":  err.Error(),
 			})
 			return
@@ -72,7 +72,7 @@ func Do(c *gin.Context) {
 			if err := rows.Scan(&_id, &_device, &_loginTS, &_ip, &_createDt); err != nil {
 				c.JSON(http.StatusOK, gin.H{
 					"s":       -1, // -9系統層級 APP不顯示錯誤訊息
-					"errCode": app.DumpErrorCode(detailCodePrefix),
+					"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
 					"errMsg":  err.Error(),
 				})
 				return

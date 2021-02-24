@@ -38,10 +38,10 @@ func main() {
 	// APP 打開APP先打這支認證 過了APP才能去要JWT token
 	approuter.GinRouterGroup.POST("/init", func(c *gin.Context) {
 		s := c.PostForm("hash")
-		if s != app.APIAuthorized() {
+		if s != app.SFunc.APIAuthorized() {
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"s":       -9,
-				"errCode": app.DumpErrorCode(mainCodePrefix),
+				"errCode": app.SFunc.DumpErrorCode(mainCodePrefix),
 				"errMsg":  "unauthorized",
 			})
 			return
@@ -110,11 +110,11 @@ func playground(c *gin.Context) {
 	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
 
 	// 陣列值2個數字相加等於4 且是唯一解
-	r := m.TwoSum([]int{3, 4, 1, 2}, 4)
-	fmt.Println(r)
+	// r := m.TwoSum([]int{3, 4, 1, 2}, 4)
+	// fmt.Println(r)
 
 	// 陣列反轉
-	// myplay.ArrReverse([]int{6, 4, 3, 1})
+	m.Play.ArrReverse([]int{6, 4, 3, 1})
 
 	// 費式數列
 	// for i := 0; i < 20; i++ {

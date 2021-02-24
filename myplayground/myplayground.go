@@ -1,16 +1,28 @@
 // Package myplayground ...
 package myplayground
 
-import "go-api-sooon/app"
+import (
+	"fmt"
+	"go-api-sooon/app"
+)
 
-// import (
-// 	"context"
-// 	"fmt"
-
-// 	"github.com/gomodule/redigo/redis"
-// )
-// type print func() app.DumpAnyLikeABoss
 type play struct {
+}
+
+// DumpAnything implements IDump interface
+func (p *play) DumpAnything(i interface{}) {
+	fmt.Println("-------------------------")
+	fmt.Println("-------------------------")
+	fmt.Printf("%#v\n", i)
+	fmt.Println("-------------------------")
+	fmt.Println("-------------------------")
+}
+
+// Play ...
+var Play *play
+
+func init() {
+	Play = &play{}
 }
 
 // TwoSum 這題主要目的在於練習HashMap/Dictionary的應用。
@@ -23,7 +35,7 @@ func TwoSum(nums []int, target int) []int {
 	revereMap := make(map[int]int)
 	for i := 0; i < len(nums); i++ {
 		// v := target - nums[i]
-		app.DumpAnything(revereMap)
+		app.SFunc.DumpAnything(revereMap)
 		if j, ok := revereMap[target-nums[i]]; ok {
 			return []int{j, i}
 		}
@@ -44,13 +56,13 @@ func TwoSum(nums []int, target int) []int {
 
 // ArrReverse 陣列反轉 不套用函式
 // 技巧 j := len(in) - i - 1 來反轉陣列的元素
-func ArrReverse(in []int) {
+func (p *play) ArrReverse(in []int) {
 
 	for i := 0; i < len(in)/2; i++ {
 		j := len(in) - i - 1        // j與i為頭尾對應index
 		in[i], in[j] = in[j], in[i] // 對調
 	}
-	app.DumpAnything(in)
+	app.SFunc.Dump(p, in)
 }
 
 // Fibonacci1 費氏數列
@@ -68,7 +80,8 @@ func Fibonacci1() func(int) int {
 	}
 }
 
-func reverse(x int) int {
+// Reverse ...
+func Reverse(x int) int {
 	var MaxInt int32 = 2147483647
 
 	if x > int(MaxInt) || x < -int(MaxInt) {

@@ -65,7 +65,7 @@ func JWTAuth(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"s":       -9,
 			"errMsg":  "no Bearer",
-			"errCode": app.DumpErrorCode(configCodePrefix),
+			"errCode": app.SFunc.DumpErrorCode(configCodePrefix),
 		})
 		return
 	}
@@ -82,7 +82,7 @@ func JWTAuth(c *gin.Context) {
 	// validationErrorIssuedAt => iat validation failed
 	tokenClaims, err := jwt.ParseWithClaims(token, &JWTClaims{}, func(token *jwt.Token) (i interface{}, err error) {
 		// JwtSecret 取得驗證
-		app.DumpAnything(token.Claims)
+		app.SFunc.DumpAnything(token.Claims)
 		// sample token is expired.  override time so it parses as valid?
 		return JwtSecret, nil
 	})

@@ -18,6 +18,23 @@ import (
 	"golang.org/x/text/language"
 )
 
+// IDump ...
+type IDump interface {
+	DumpAnything(i interface{})
+}
+
+// SooonFunc ...
+type SooonFunc struct {
+	APIAuthorizedKey string
+}
+
+// SFunc ...
+var SFunc *SooonFunc
+
+func init() {
+	SFunc = &SooonFunc{APIAuthorizedKey: ""}
+}
+
 // Loadi18n 抓不到語言預設使用en
 func Loadi18n(c *gin.Context) *i18n.Localizer {
 	lang := c.Request.FormValue("lang")
@@ -38,10 +55,43 @@ func Loadi18n(c *gin.Context) *i18n.Localizer {
 }
 
 // APIAuthorized ...
-func APIAuthorized() string {
-	h := sha256.New()
-	h.Write([]byte(os.Getenv("APP_NAME")))
-	return hex.EncodeToString(h.Sum(nil))
+func (s *SooonFunc) APIAuthorized() string {
+	if s.APIAuthorizedKey == "" {
+		h := sha256.New()
+		h.Write([]byte(os.Getenv("APP_NAME")))
+		return hex.EncodeToString(h.Sum(nil))
+	}
+	return s.APIAuthorizedKey
+
+}
+
+/*DumpErrorCode debug印出function name*/
+func (s *SooonFunc) DumpErrorCode(codePrefix string) string {
+	_, _, fileLine, _ := runtime.Caller(1)
+	// return runtime.FuncForPC(pc).Name()
+	return fmt.Sprintf("%s_%d", codePrefix, fileLine)
+}
+
+// DumpAnything dumping your stuff like a boss
+func (s *SooonFunc) DumpAnything(i interface{}) {
+	fmt.Println("-------------------------")
+	fmt.Printf("%#v\n", i)
+	fmt.Println("-------------------------")
+}
+
+// NewMd5String BD密碼salt產生器 會產生len * 2長度的字串 最多16*2
+func (s *SooonFunc) NewMd5String(len int) string {
+	t := strconv.FormatInt(time.Now().Unix(), 10) // int64 to int to string
+	b := []byte(t)
+	m := md5.Sum(b)
+	final := hex.EncodeToString(m[0:len])
+
+	return final
+}
+
+// Dump implement IDump interface
+func (s *SooonFunc) Dump(d IDump, i interface{}) {
+	d.DumpAnything(i)
 }
 
 // GetTokenVia ...
@@ -58,28 +108,4 @@ func GetTokenVia(c *gin.Context) {
 		})
 		return
 	}
-}
-
-/*DumpErrorCode debug印出function name*/
-func DumpErrorCode(codePrefix string) string {
-	_, _, fileLine, _ := runtime.Caller(1)
-	// return runtime.FuncForPC(pc).Name()
-	return fmt.Sprintf("%s_%d", codePrefix, fileLine)
-}
-
-// DumpAnything dumping your stuff like a boss
-func DumpAnything(i interface{}) {
-	fmt.Println("-------------------------")
-	fmt.Printf("%#v\n", i)
-	fmt.Println("-------------------------")
-}
-
-// NewMd5String BD密碼salt產生器 會產生len * 2長度的字串 最多16*2
-func NewMd5String(len int) string {
-	t := strconv.FormatInt(time.Now().Unix(), 10) // int64 to int to string
-	b := []byte(t)
-	m := md5.Sum(b)
-	final := hex.EncodeToString(m[0:len])
-
-	return final
 }
