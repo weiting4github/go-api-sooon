@@ -17,7 +17,6 @@ import (
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 // loginCodePrefix ...
@@ -54,7 +53,7 @@ func Login(c *gin.Context) {
 	go func() {
 		{
 			prepareStr := "SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?"
-			stmt, err := models.DBM.DB.Prepare("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+			stmt, err := models.DBM.DB.Prepare(prepareStr)
 			defer stmt.Close()
 			if err != nil {
 				errch <- err // 錯誤跳出
@@ -62,7 +61,7 @@ func Login(c *gin.Context) {
 			}
 
 			err = stmt.QueryRow(loginBody.Email).Scan(&memberID, &email, &pwd, &salt)
-			if err != nil && err != sql.ErrNoRows {
+			if err != nil {
 				errch <- err // 錯誤跳出
 				close(errch)
 				return
@@ -76,7 +75,14 @@ func Login(c *gin.Context) {
 			if pwd == fmt.Sprintf("%x", h.Sum(nil)) {
 				ch <- memberID // 傳給jwt payload
 				close(ch)
+			} else {
+				fmt.Println(pwd)
+				fmt.Printf("%x", h.Sum(nil))
+				errch <- sql.ErrNoRows // 密碼錯故意使用sql.ErrNoRows顯示帳密錯誤
+				close(errch)
+				return
 			}
+
 		}
 		// 更新使用者登入Log
 		{
@@ -137,10 +143,7 @@ func Login(c *gin.Context) {
 	select {
 	case _token := <-tokenString: // DB驗證登入
 		// 多語
-		localizer := app.Loadi18n(c)
-		translation, _ := localizer.Localize(&i18n.LocalizeConfig{
-			MessageID: "登入成功",
-		})
+		translation := app.SFunc.Localizer(c, "登入成功")
 		c.JSON(http.StatusOK, gin.H{
 			"s":      1,
 			"member": memberID,
@@ -148,13 +151,23 @@ func Login(c *gin.Context) {
 			"msg":    translation,
 		})
 		return
-	case err = <-errch:
+	case err := <-errch:
+		s := -1
+		switch {
+		case err == sql.ErrNoRows:
+			s = -1
+			err = errors.New(app.SFunc.Localizer(c, "帳號不存在"))
+		case err != nil:
+			s = -9
+		}
+
 		// DB initialization failed
 		c.JSON(http.StatusOK, gin.H{
-			"s":       -9,
+			"s":       s,
 			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
 			"errMsg":  err.Error(),
 		})
+
 		return
 	case <-time.After(time.Second * 3):
 		c.JSON(http.StatusOK, gin.H{

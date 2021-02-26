@@ -10,11 +10,10 @@ type play struct {
 }
 
 // DumpAnything implements IDump interface
+// interface practice
 func (p *play) DumpAnything(i interface{}) {
 	fmt.Println("-------------------------")
-	fmt.Println("-------------------------")
 	fmt.Printf("%#v\n", i)
-	fmt.Println("-------------------------")
 	fmt.Println("-------------------------")
 }
 
@@ -32,10 +31,10 @@ func init() {
 // 依此流程，最壞的狀況整個array遍歷後，就可以得到答案。
 // key, value對調放進map, 目標值-陣列value的差值 存在於 map的key 就可以取得 index
 func TwoSum(nums []int, target int) []int {
+
 	revereMap := make(map[int]int)
+
 	for i := 0; i < len(nums); i++ {
-		// v := target - nums[i]
-		app.SFunc.DumpAnything(revereMap)
 		if j, ok := revereMap[target-nums[i]]; ok {
 			return []int{j, i}
 		}

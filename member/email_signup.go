@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/nicksnyder/go-i18n/v2/i18n"
 )
 
 // signupCodePrefix 錯誤代碼追蹤
@@ -97,10 +96,11 @@ func NewMemberReg(c *gin.Context) {
 		outputMsg = "註冊成功"
 	}
 	// 語系
-	localizer := app.Loadi18n(c)
-	translation, _ := localizer.Localize(&i18n.LocalizeConfig{
-		MessageID: outputMsg,
-	})
+	translation := app.SFunc.Localizer(c, outputMsg)
+	// localizer := app.Loadi18n(c)
+	// translation, _ := localizer.Localize(&i18n.LocalizeConfig{
+	// 	MessageID: outputMsg,
+	// })
 
 	c.JSON(http.StatusOK, gin.H{
 		"s":        s,

@@ -35,25 +35,6 @@ func init() {
 	SFunc = &SooonFunc{APIAuthorizedKey: ""}
 }
 
-// Loadi18n 抓不到語言預設使用en
-func Loadi18n(c *gin.Context) *i18n.Localizer {
-	lang := c.Request.FormValue("lang")
-	if len(lang) <= 0 {
-		if v, ok := c.Get("lang"); ok {
-			lang = v.(string)
-		} else {
-			lang = "zh"
-		}
-	}
-	bundle := i18n.NewBundle(language.Chinese)
-	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
-	bundle.LoadMessageFile("config/locales/" + lang + ".toml")
-
-	localizer := i18n.NewLocalizer(bundle, lang)
-
-	return localizer
-}
-
 // APIAuthorized ...
 func (s *SooonFunc) APIAuthorized() string {
 	if s.APIAuthorizedKey == "" {
@@ -108,4 +89,34 @@ func GetTokenVia(c *gin.Context) {
 		})
 		return
 	}
+}
+
+// Loadi18n 多語設定
+// 抓不到語言預設使用en
+func (s *SooonFunc) loadi18n(c *gin.Context) *i18n.Localizer {
+	lang := c.Request.FormValue("lang")
+	if len(lang) <= 0 {
+		if v, ok := c.Get("lang"); ok {
+			lang = v.(string)
+		} else {
+			lang = "zh"
+		}
+	}
+	bundle := i18n.NewBundle(language.Chinese)
+	bundle.RegisterUnmarshalFunc("toml", toml.Unmarshal)
+	bundle.LoadMessageFile("config/locales/" + lang + ".toml")
+
+	localizer := i18n.NewLocalizer(bundle, lang)
+
+	return localizer
+}
+
+// Localizer 返回翻譯後的多語
+func (s *SooonFunc) Localizer(c *gin.Context, outputMsg string) string {
+	// 語系
+	localizer := s.loadi18n(c)
+	translation, _ := localizer.Localize(&i18n.LocalizeConfig{
+		MessageID: outputMsg,
+	})
+	return translation
 }
