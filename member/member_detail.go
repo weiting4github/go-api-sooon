@@ -14,15 +14,30 @@ import (
 
 const detailCodePrefix = "MEM02"
 
-// Do 用switch case 對應用戶功能
+// Do loginHistory: 登入紀錄,
+// @Summary  Member detail API
+// @Tags Member
+// @param action path string true "profile|loginHistory"
+// @param mid path string true "用戶編號(1000000001)"
+// @param Authorization header string false "JWT"
+// @version 1.0
+// @produce json
+// @Success 200 {object} historySuccessResponse "登入紀錄"
+// @Success 201 {object} historySuccessResponse "個人檔案"
+// @Failure 400 {object} apiFailResponse
+// @host localhost:3000
+// @Router /member/{action}/{mid} [get]
 func Do(c *gin.Context) {
 	fmt.Println(c.Param("action"))
 	switch c.Param("action") {
-	case "test":
+	// 個人檔案
+	case "profile":
+		memberID := c.Param("mid")
 		v, _ := c.Get("memberID")
 		c.JSON(http.StatusOK, gin.H{
-			"s": 1,
-			"c": v,
+			"s":         1,
+			"c":         v,
+			"profileID": memberID,
 		})
 		return
 	case "loginHistory":
@@ -30,23 +45,23 @@ func Do(c *gin.Context) {
 		memberID := c.Param("mid")
 
 		// 自己才能看自己紀錄
-		chkMemberID, _ := strconv.ParseUint(memberID, 10, 64)
-		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(uint64) != chkMemberID {
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
-				"errMsg":  errors.New("session memberID lost").Error(),
+		chkMemberID, _ := strconv.ParseInt(memberID, 10, 64)
+		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(int64) != chkMemberID {
+			c.JSON(http.StatusBadRequest, apiFailResponse{
+				S:       -9,
+				ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+				ErrMsg:  errors.New("Session Invalid").Error(),
 			})
 			return
 		}
-		prepareStr := "SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?"
-		stmt, err := models.DBM.DB.Prepare(prepareStr)
+		models.DBM.SetQuery("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
+		stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
 		defer stmt.Close()
 		if err != nil {
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
-				"errMsg":  err.Error(),
+			c.JSON(http.StatusBadRequest, apiFailResponse{
+				S:       -9,
+				ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+				ErrMsg:  err.Error(),
 			})
 			return
 		}
@@ -54,41 +69,34 @@ func Do(c *gin.Context) {
 		rows, err := stmt.Query(memberID)
 		defer rows.Close()
 		if err != nil && err != sql.ErrNoRows {
-			c.JSON(http.StatusServiceUnavailable, gin.H{
-				"s":       -9, // -9系統層級 APP不顯示錯誤訊息
-				"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
-				"errMsg":  err.Error(),
+			c.JSON(http.StatusBadRequest, apiFailResponse{
+				S:       -9,
+				ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+				ErrMsg:  err.Error(),
 			})
 			return
 		}
 		// log to stdout
-		models.DBM.SQLDebug(prepareStr, memberID)
+		models.DBM.SQLDebug(memberID)
 
-		var log []map[string]interface{}
+		var logs []historyLog
 		for rows.Next() {
-			r := make(map[string]interface{})
-			var _id, _loginTS int
-			var _device, _createDt, _ip string
-			if err := rows.Scan(&_id, &_device, &_loginTS, &_ip, &_createDt); err != nil {
-				c.JSON(http.StatusOK, gin.H{
-					"s":       -1, // -9系統層級 APP不顯示錯誤訊息
-					"errCode": app.SFunc.DumpErrorCode(detailCodePrefix),
-					"errMsg":  err.Error(),
+			var log historyLog
+			if err := rows.Scan(&log.MemberID, &log.Device, &log.LoginTs, &log.IP, &log.CreateDt); err != nil {
+				c.JSON(http.StatusBadRequest, apiFailResponse{
+					S:       -9,
+					ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+					ErrMsg:  err.Error(),
 				})
 				return
 			}
 
-			r["memberID"] = _id
-			r["device"] = _device
-			r["loginTs"] = _loginTS
-			r["ip"] = _ip
-			r["createDt"] = _createDt
-			log = append(log, r)
+			logs = append(logs, log)
 		}
 
-		c.JSON(http.StatusOK, gin.H{
-			"s":    1,
-			"data": log,
+		c.JSON(http.StatusOK, historySuccessResponse{
+			S:    1,
+			Data: logs,
 		})
 		return
 	}

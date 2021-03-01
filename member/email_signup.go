@@ -33,14 +33,24 @@ type RegInfo struct {
 }
 
 // NewMemberReg POST參數
+// @Summary  Signup API
+// @Tags Sign Up
+// @param email formData string true "註冊信箱 binding:RegEmail"
+// @param p formData string true "註冊密碼 binding:Pwd"
+// @version 1.0
+// @produce application/json
+// @Success 200 {object} signupSuccessResponse "註冊成功"
+// @Failure 400 {object} apiFailResponse
+// @host localhost:3000
+// @Router /signup [post]
 func NewMemberReg(c *gin.Context) {
 	var reginfo RegInfo
 	err := c.ShouldBind(&reginfo)
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"s":       -9,
-			"errMsg":  err.Error(),
-			"errCode": app.SFunc.DumpErrorCode(signupCodePrefix),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrMsg:  err.Error(),
 		})
 		return
 	}
@@ -52,36 +62,36 @@ func NewMemberReg(c *gin.Context) {
 	h.Write([]byte(reginfo.Pwd + salt))
 	hashPWD := fmt.Sprintf("%x", h.Sum(nil))
 
-	prepareStr := "INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)"
-	stmtIns, err := models.DBM.DB.Prepare(prepareStr)
+	models.DBM.SetQuery("INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)")
+	stmtIns, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
 	defer stmtIns.Close()
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"s":        -9,
-			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
-			"err_msg":  err.Error(),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrMsg:  err.Error(),
 		})
 		return
 	}
 
 	result, err := stmtIns.Exec(reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"s":        -9,
-			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
-			"err_msg":  err.Error(),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrMsg:  err.Error(),
 		})
 		return
 	}
 	// log to stdout
-	models.DBM.SQLDebug(prepareStr, reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
+	models.DBM.SQLDebug(reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
 
 	newMember, err := result.LastInsertId()
 	if err != nil {
-		c.JSON(http.StatusOK, gin.H{
-			"s":        -9,
-			"err_code": app.SFunc.DumpErrorCode(signupCodePrefix),
-			"err_msg":  err.Error(),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrMsg:  err.Error(),
 		})
 		return
 	}
@@ -97,15 +107,13 @@ func NewMemberReg(c *gin.Context) {
 	}
 	// 語系
 	translation := app.SFunc.Localizer(c, outputMsg)
-	// localizer := app.Loadi18n(c)
-	// translation, _ := localizer.Localize(&i18n.LocalizeConfig{
-	// 	MessageID: outputMsg,
-	// })
 
-	c.JSON(http.StatusOK, gin.H{
-		"s":        s,
-		"msg":      translation,
-		"memberId": newMember,
+	data := signupMsg{
+		MemberID: newMember,
+		Msg:      translation,
+	}
+	c.JSON(http.StatusOK, signupSuccessResponse{
+		S:    s,
+		Data: data,
 	})
-
 }

@@ -13,8 +13,9 @@ var DBM *DBManager
 
 // DBManager sqldb 管理器
 type DBManager struct {
-	DB  *sql.DB
-	log *log.Logger
+	DB         *sql.DB
+	log        *log.Logger
+	prepareStr string
 }
 
 const modelsCodePrefix = "MOD00"
@@ -47,6 +48,7 @@ func (m *DBManager) NewDBConnect() {
 
 	if err := db.Ping(); err != nil {
 		fmt.Printf("DBConnect: %s", err.Error())
+		panic(err.Error())
 	}
 	l := log.New(os.Stdout, "[sql]", log.LstdFlags)
 	DBM = &DBManager{DB: db, log: l}
@@ -54,7 +56,16 @@ func (m *DBManager) NewDBConnect() {
 
 // SQLDebug 印出 sql statement
 func (m *DBManager) SQLDebug(args ...interface{}) {
-	fmt.Println("")
+	m.log.Println(m.prepareStr)
 	m.log.Println(args...)
-	fmt.Println("")
+}
+
+// SetQuery 設定SQL語法
+func (m *DBManager) SetQuery(query string) {
+	m.prepareStr = query
+}
+
+// GetQuery 取得設定SQL語法
+func (m *DBManager) GetQuery() string {
+	return m.prepareStr
 }

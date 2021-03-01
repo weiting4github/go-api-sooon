@@ -1,4 +1,181 @@
+basePath: /dev
+definitions:
+  member.apiFailResponse:
+    properties:
+      errCode:
+        type: string
+      errMsg:
+        type: string
+      s:
+        type: integer
+    type: object
+  member.historyLog:
+    properties:
+      createDt:
+        type: string
+      device:
+        type: string
+      ip:
+        type: string
+      loginTs:
+        type: integer
+      memberID:
+        type: integer
+    type: object
+  member.historySuccessResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/member.historyLog'
+        type: array
+      s:
+        type: integer
+    type: object
+  member.loginMsg:
+    properties:
+      memberID:
+        type: integer
+      msg:
+        type: string
+      token:
+        type: string
+    type: object
+  member.loginSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/member.loginMsg'
+      s:
+        type: integer
+    type: object
+  member.signupMsg:
+    properties:
+      memberID:
+        type: integer
+      msg:
+        type: string
+    type: object
+  member.signupSuccessResponse:
+    properties:
+      data:
+        $ref: '#/definitions/member.signupMsg'
+      s:
+        type: integer
+    type: object
+host: 127.0.0.1:3000
 info:
-  contact: {}
-paths: {}
+  contact:
+    name: sooon
+  description: sooon api doc
+  title: sooon api
+  version: "1.0"
+paths:
+  /login/email:
+    post:
+      parameters:
+      - description: 登入信箱 binding:Email
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 登入密碼 binding:RawPWD
+        in: formData
+        name: p
+        required: true
+        type: string
+      - description: 用戶語系
+        in: formData
+        name: lang
+        type: string
+      - description: 用戶裝置
+        in: formData
+        name: client
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登入成功
+          schema:
+            $ref: '#/definitions/member.loginSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/member.apiFailResponse'
+      summary: Login API
+      tags:
+      - Login
+  /member/{action}/{mid}:
+    get:
+      parameters:
+      - description: profile|loginHistory
+        in: path
+        name: action
+        required: true
+        type: string
+      - description: 用戶編號(1000000001)
+        in: path
+        name: mid
+        required: true
+        type: string
+      - description: JWT
+        in: header
+        name: Authorization
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登入紀錄
+          schema:
+            $ref: '#/definitions/member.historySuccessResponse'
+        "201":
+          description: 個人檔案
+          schema:
+            $ref: '#/definitions/member.historySuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/member.apiFailResponse'
+      summary: Member detail API
+      tags:
+      - Member
+  /playground:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: '{"s":1}'
+      summary: Playground API
+      tags:
+      - Test
+  /signup:
+    post:
+      parameters:
+      - description: 註冊信箱 binding:RegEmail
+        in: formData
+        name: email
+        required: true
+        type: string
+      - description: 註冊密碼 binding:Pwd
+        in: formData
+        name: p
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 註冊成功
+          schema:
+            $ref: '#/definitions/member.signupSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/member.apiFailResponse'
+      summary: Signup API
+      tags:
+      - Sign Up
+schemes:
+- http
 swagger: "2.0"

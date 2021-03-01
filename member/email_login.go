@@ -31,6 +31,18 @@ type LoginBody struct {
 }
 
 // Login ...
+// @Summary  Login API
+// @Tags Login
+// @param email formData string true "登入信箱 binding:Email"
+// @param p formData string true "登入密碼 binding:RawPWD"
+// @param lang formData string false "用戶語系"
+// @param client formData string false "用戶裝置"
+// @version 1.0
+// @produce application/json
+// @Failure 200 {object} loginSuccessResponse "登入成功"
+// @Failure 400 {object} apiFailResponse
+// @host localhost:3000
+// @Router /login/email [post]
 func Login(c *gin.Context) {
 	// form body parameter
 	var loginBody LoginBody
@@ -45,15 +57,15 @@ func Login(c *gin.Context) {
 	}
 
 	// 查email
-	ch := make(chan uint64) // member_id
+	ch := make(chan int64) // member_id
 	errch := make(chan error)
 	tokenString := make(chan string) // jwt
 	var email, pwd, salt string
-	var memberID uint64
+	var memberID int64
 	go func() {
 		{
-			prepareStr := "SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?"
-			stmt, err := models.DBM.DB.Prepare(prepareStr)
+			models.DBM.SetQuery("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
+			stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
 			defer stmt.Close()
 			if err != nil {
 				errch <- err // 錯誤跳出
@@ -67,7 +79,7 @@ func Login(c *gin.Context) {
 				return
 			}
 			// log to stdout
-			models.DBM.SQLDebug(prepareStr, memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
+			models.DBM.SQLDebug(loginBody.Email)
 
 			// 驗證密碼
 			h := sha256.New()
@@ -86,8 +98,8 @@ func Login(c *gin.Context) {
 		}
 		// 更新使用者登入Log
 		{
-			prepareStr := "INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`, `ip`) VALUES (?, ?, ?, ?)"
-			stmt, err := models.DBM.DB.Prepare(prepareStr)
+			models.DBM.SetQuery("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`, `ip`) VALUES (?, ?, ?, ?)")
+			stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.SFunc.DumpErrorCode(loginCodePrefix) + err.Error())
@@ -101,7 +113,7 @@ func Login(c *gin.Context) {
 				return
 			}
 			// log to stdout
-			models.DBM.SQLDebug(prepareStr, memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
+			models.DBM.SQLDebug(memberID, loginBody.Device, time.Now().Unix(), c.ClientIP())
 		}
 	}()
 
@@ -129,10 +141,10 @@ func Login(c *gin.Context) {
 		// 先做JWT 上面用戶編號拿到
 		_, token, err := config.CreateJWTClaims(_memberID, loginBody.Email, "member", "login")
 		if err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"s":       -9,
-				"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
-				"errMsg":  err.Error(),
+			c.JSON(http.StatusBadRequest, apiFailResponse{
+				S:       -9,
+				ErrCode: app.SFunc.DumpErrorCode(loginCodePrefix),
+				ErrMsg:  err.Error(),
 			})
 			return
 		}
@@ -144,11 +156,14 @@ func Login(c *gin.Context) {
 	case _token := <-tokenString: // DB驗證登入
 		// 多語
 		translation := app.SFunc.Localizer(c, "登入成功")
-		c.JSON(http.StatusOK, gin.H{
-			"s":      1,
-			"member": memberID,
-			"token":  _token,
-			"msg":    translation,
+
+		c.JSON(http.StatusOK, loginSuccessResponse{
+			S: 1,
+			Data: loginMsg{
+				MemberID: memberID,
+				Msg:      translation,
+				Token:    _token,
+			},
 		})
 		return
 	case err := <-errch:
@@ -162,26 +177,26 @@ func Login(c *gin.Context) {
 		}
 
 		// DB initialization failed
-		c.JSON(http.StatusOK, gin.H{
-			"s":       s,
-			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
-			"errMsg":  err.Error(),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       s,
+			ErrCode: app.SFunc.DumpErrorCode(loginCodePrefix),
+			ErrMsg:  err.Error(),
 		})
 
 		return
 	case <-time.After(time.Second * 3):
-		c.JSON(http.StatusOK, gin.H{
-			"s":       -9,
-			"errCode": app.SFunc.DumpErrorCode(loginCodePrefix),
-			"errMsg":  errors.New("Timeout").Error(),
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: app.SFunc.DumpErrorCode(loginCodePrefix),
+			ErrMsg:  errors.New("Timeout").Error(),
 		})
 		return
 		// default:
-		// 	// DB initialization failed
-		// 	c.JSON(http.StatusOK, gin.H{
-		// 		"s":       -9,
-		// 		"errCode": app.SF.DumpErrorCode(loginCodePrefix),
-		// 		"errMsg":  "DB initialization failed",
-		// 	})
+		// DB initialization failed
+		// c.JSON(http.StatusOK, apiFailResponse{
+		// 	S:       -9,
+		// 	ErrCode: app.SFunc.DumpErrorCode(loginCodePrefix),
+		// 	ErrMsg:  errors.New("DB initialization failed").Error(),
+		// })
 	}
 }

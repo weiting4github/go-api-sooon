@@ -18,12 +18,275 @@ var doc = `{
     "info": {
         "description": "{{.Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "sooon"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
-    "paths": {}
+    "paths": {
+        "/login/email": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Login"
+                ],
+                "summary": "Login API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "登入信箱 binding:Email",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "登入密碼 binding:RawPWD",
+                        "name": "p",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用戶語系",
+                        "name": "lang",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "用戶裝置",
+                        "name": "client",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登入成功",
+                        "schema": {
+                            "$ref": "#/definitions/member.loginSuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/member.apiFailResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/member/{action}/{mid}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Member"
+                ],
+                "summary": "Member detail API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "profile|loginHistory",
+                        "name": "action",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "用戶編號(1000000001)",
+                        "name": "mid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "JWT",
+                        "name": "Authorization",
+                        "in": "header"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登入紀錄",
+                        "schema": {
+                            "$ref": "#/definitions/member.historySuccessResponse"
+                        }
+                    },
+                    "201": {
+                        "description": "個人檔案",
+                        "schema": {
+                            "$ref": "#/definitions/member.historySuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/member.apiFailResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/playground": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Test"
+                ],
+                "summary": "Playground API",
+                "responses": {
+                    "200": {
+                        "description": "{\"s\":1}"
+                    }
+                }
+            }
+        },
+        "/signup": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Sign Up"
+                ],
+                "summary": "Signup API",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "註冊信箱 binding:RegEmail",
+                        "name": "email",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "註冊密碼 binding:Pwd",
+                        "name": "p",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "註冊成功",
+                        "schema": {
+                            "$ref": "#/definitions/member.signupSuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/member.apiFailResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "member.apiFailResponse": {
+            "type": "object",
+            "properties": {
+                "errCode": {
+                    "type": "string"
+                },
+                "errMsg": {
+                    "type": "string"
+                },
+                "s": {
+                    "type": "integer"
+                }
+            }
+        },
+        "member.historyLog": {
+            "type": "object",
+            "properties": {
+                "createDt": {
+                    "type": "string"
+                },
+                "device": {
+                    "type": "string"
+                },
+                "ip": {
+                    "type": "string"
+                },
+                "loginTs": {
+                    "type": "integer"
+                },
+                "memberID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "member.historySuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/member.historyLog"
+                    }
+                },
+                "s": {
+                    "type": "integer"
+                }
+            }
+        },
+        "member.loginMsg": {
+            "type": "object",
+            "properties": {
+                "memberID": {
+                    "type": "integer"
+                },
+                "msg": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "member.loginSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/member.loginMsg"
+                },
+                "s": {
+                    "type": "integer"
+                }
+            }
+        },
+        "member.signupMsg": {
+            "type": "object",
+            "properties": {
+                "memberID": {
+                    "type": "integer"
+                },
+                "msg": {
+                    "type": "string"
+                }
+            }
+        },
+        "member.signupSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/member.signupMsg"
+                },
+                "s": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
 }`
 
 type swaggerInfo struct {
@@ -37,12 +300,12 @@ type swaggerInfo struct {
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = swaggerInfo{
-	Version:     "",
-	Host:        "",
-	BasePath:    "",
-	Schemes:     []string{},
-	Title:       "",
-	Description: "",
+	Version:     "1.0",
+	Host:        "127.0.0.1:3000",
+	BasePath:    "/dev",
+	Schemes:     []string{"http"},
+	Title:       "sooon api",
+	Description: "sooon api doc",
 }
 
 type s struct{}

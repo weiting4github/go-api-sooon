@@ -70,17 +70,17 @@ func (p *play) ArrReverse(in []int) {
 // F_{n}=F_{n-1}+F_{n-2}}F_{n}=F_{{n-1}}+F_{{n-2}}（n≧2）
 // 用文字來說，就是費氏數列由0和1開始，之後的費波那契數就是由之前的兩數相加而得出
 // 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233…
-func Fibonacci1() func(int) int {
+func (p *play) Fibonacci1() func(int) int {
 	return func(x int) int {
 		if x < 2 {
 			return x
 		}
-		return Fibonacci1()(x-2) + Fibonacci1()(x-1) // 前兩個數字相加
+		return p.Fibonacci1()(x-2) + p.Fibonacci1()(x-1) // 前兩個數字相加
 	}
 }
 
 // Reverse ...
-func Reverse(x int) int {
+func (p *play) Reverse(x int) int {
 	var MaxInt int32 = 2147483647
 
 	if x > int(MaxInt) || x < -int(MaxInt) {

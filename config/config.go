@@ -1,4 +1,4 @@
-/*Package config Server App協議常用設定 機密資料不要放這邊*/
+/*Package config Server App協議常用設定 middleware 機密資料不要放這邊*/
 package config
 
 import (
@@ -23,7 +23,7 @@ const configCodePrefix = "CNF00"
 type JWTClaims struct {
 	Email    string `json:"Email"`
 	Role     string `json:"Role"`
-	MemberID uint64 `json:"MemberID"`
+	MemberID int64  `json:"MemberID"`
 	Lang     string `json:"Lang"`
 	jwt.StandardClaims
 }
@@ -32,7 +32,7 @@ type JWTClaims struct {
 var JwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 // CreateJWTClaims 簽發JWT token
-func CreateJWTClaims(memberID uint64, email string, role string, issuer string) (JWTClaims, string, error) {
+func CreateJWTClaims(memberID int64, email string, role string, issuer string) (JWTClaims, string, error) {
 	now := time.Now()
 	jwtID := email + strconv.FormatInt(now.Unix(), 10)
 
@@ -62,7 +62,7 @@ func JWTAuth(c *gin.Context) {
 	auth := c.GetHeader("Authorization")
 	bearerString := strings.Split(auth, "Bearer ")
 	if len(bearerString) < 2 {
-		c.JSON(http.StatusUnauthorized, gin.H{
+		c.JSON(http.StatusOK, gin.H{
 			"s":       -9,
 			"errMsg":  "no Bearer",
 			"errCode": app.SFunc.DumpErrorCode(configCodePrefix),
@@ -132,4 +132,21 @@ type MemberSessions struct {
 	LoginTs int64
 	Lang    string
 	Email   string
+}
+
+// CORSMiddleware 允許CORS
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
