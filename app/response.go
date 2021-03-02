@@ -1,11 +1,11 @@
 package app
 
 type apiFailResponse struct {
-	S       int    `json:"s" example:"-9"`
-	ErrCode string `json:"errCode" example:"APP00_143"`
-	ErrMsg  string `json:"errMsg" example:"unauthorized"`
+	S       int    `json:"s"`
+	ErrCode string `json:"errCode"`
+	ErrMsg  string `json:"errMsg"`
 }
 
 type initSuccessResponse struct {
-	S int `json:"s" example:"1"`
+	S int `json:"s"`
 }

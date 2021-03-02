@@ -34,7 +34,7 @@ var doc = `{
                 "tags": [
                     "App"
                 ],
-                "summary": "APP基本認證 初始化功能",
+                "summary": "APP基本認證 過了APP才能去要JWT token",
                 "parameters": [
                     {
                         "type": "string",
@@ -46,7 +46,7 @@ var doc = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "{\"s\":1}",
+                        "description": "登入紀錄",
                         "schema": {
                             "$ref": "#/definitions/app.initSuccessResponse"
                         }
@@ -229,16 +229,13 @@ var doc = `{
             "type": "object",
             "properties": {
                 "errCode": {
-                    "type": "string",
-                    "example": "APP00_143"
+                    "type": "string"
                 },
                 "errMsg": {
-                    "type": "string",
-                    "example": "unauthorized"
+                    "type": "string"
                 },
                 "s": {
-                    "type": "integer",
-                    "example": -9
+                    "type": "integer"
                 }
             }
         },
@@ -246,8 +243,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "s": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         },
@@ -255,16 +251,13 @@ var doc = `{
             "type": "object",
             "properties": {
                 "errCode": {
-                    "type": "string",
-                    "example": "APP00_143"
+                    "type": "string"
                 },
                 "errMsg": {
-                    "type": "string",
-                    "example": "No such account exists"
+                    "type": "string"
                 },
                 "s": {
-                    "type": "integer",
-                    "example": -9
+                    "type": "integer"
                 }
             }
         },
@@ -272,24 +265,19 @@ var doc = `{
             "type": "object",
             "properties": {
                 "createDt": {
-                    "type": "string",
-                    "example": "2021-03-02 10:07:34"
+                    "type": "string"
                 },
                 "device": {
-                    "type": "string",
-                    "example": "A"
+                    "type": "string"
                 },
                 "ip": {
-                    "type": "string",
-                    "example": "::1"
+                    "type": "string"
                 },
                 "loginTs": {
-                    "type": "integer",
-                    "example": 1614650853
+                    "type": "integer"
                 },
                 "memberID": {
-                    "type": "integer",
-                    "example": 1000000001
+                    "type": "integer"
                 }
             }
         },
@@ -303,8 +291,7 @@ var doc = `{
                     }
                 },
                 "s": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         },
@@ -312,16 +299,13 @@ var doc = `{
             "type": "object",
             "properties": {
                 "memberID": {
-                    "type": "integer",
-                    "example": 1000000001
+                    "type": "integer"
                 },
                 "msg": {
-                    "type": "string",
-                    "example": "登入成功"
+                    "type": "string"
                 },
                 "token": {
-                    "type": "string",
-                    "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJFbWFpbCI6ImQyd3UxODdAZ21haWwuY29tIiwiUm9sZSI6Im1lbWJlciIsIk1lbWJlcklEIjoxMDAwMDAwMDM0LCJMYW5nIjoiIiwiYXVkIjoiZDJ3dTE4N0BnbWFpbC5jb20iLCJleHAiOjE2MTQ2NjA0MzIsImp0aSI6ImQyd3UxODdAZ21haWwuY29tMTYxNDY1NjgzMiIsImlhdCI6MTYxNDY1NjgzMiwiaXNzIjoibG9naW4iLCJuYmYiOjE2MTQ2NTY4MzMsInN1YiI6ImQyd3UxODdAZ21haWwuY29tIn0.9jUJBPCZgMr4AIWv_JfwVSN9gMVeLbxI8Ck5HrGcknk"
+                    "type": "string"
                 }
             }
         },
@@ -332,8 +316,7 @@ var doc = `{
                     "$ref": "#/definitions/member.loginMsg"
                 },
                 "s": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         },
@@ -341,12 +324,10 @@ var doc = `{
             "type": "object",
             "properties": {
                 "memberID": {
-                    "type": "integer",
-                    "example": 1000000001
+                    "type": "integer"
                 },
                 "msg": {
-                    "type": "string",
-                    "example": "註冊成功"
+                    "type": "string"
                 }
             }
         },
@@ -357,8 +338,7 @@ var doc = `{
                     "$ref": "#/definitions/member.signupMsg"
                 },
                 "s": {
-                    "type": "integer",
-                    "example": 1
+                    "type": "integer"
                 }
             }
         }
