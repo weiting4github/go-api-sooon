@@ -26,6 +26,40 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/init": {
+            "post": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "App"
+                ],
+                "summary": "APP基本認證 過了APP才能去要JWT token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "sha256",
+                        "name": "hash",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登入紀錄",
+                        "schema": {
+                            "$ref": "#/definitions/app.initSuccessResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/app.apiFailResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/login/email": {
             "post": {
                 "produces": [
@@ -191,6 +225,28 @@ var doc = `{
         }
     },
     "definitions": {
+        "app.apiFailResponse": {
+            "type": "object",
+            "properties": {
+                "errCode": {
+                    "type": "string"
+                },
+                "errMsg": {
+                    "type": "string"
+                },
+                "s": {
+                    "type": "integer"
+                }
+            }
+        },
+        "app.initSuccessResponse": {
+            "type": "object",
+            "properties": {
+                "s": {
+                    "type": "integer"
+                }
+            }
+        },
         "member.apiFailResponse": {
             "type": "object",
             "properties": {

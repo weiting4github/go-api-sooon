@@ -1,5 +1,19 @@
 basePath: /dev
 definitions:
+  app.apiFailResponse:
+    properties:
+      errCode:
+        type: string
+      errMsg:
+        type: string
+      s:
+        type: integer
+    type: object
+  app.initSuccessResponse:
+    properties:
+      s:
+        type: integer
+    type: object
   member.apiFailResponse:
     properties:
       errCode:
@@ -69,6 +83,28 @@ info:
   title: sooon api
   version: "1.0"
 paths:
+  /init:
+    post:
+      parameters:
+      - description: sha256
+        in: formData
+        name: hash
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 登入紀錄
+          schema:
+            $ref: '#/definitions/app.initSuccessResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/app.apiFailResponse'
+      summary: APP基本認證 過了APP才能去要JWT token
+      tags:
+      - App
   /login/email:
     post:
       parameters:

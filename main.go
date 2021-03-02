@@ -51,22 +51,23 @@ func main() {
 		approuter.GinRouterGroup.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))
 
 	}
-	// MARK: dev
-	// APP 打開APP先打這支認證 過了APP才能去要JWT token
-	approuter.GinRouterGroup.POST("/init", func(c *gin.Context) {
-		s := c.PostForm("hash")
-		if s != app.SFunc.APIAuthorized() {
-			c.JSON(http.StatusOK, gin.H{
-				"s":       -9,
-				"errCode": app.SFunc.DumpErrorCode(mainCodePrefix),
-				"errMsg":  "unauthorized",
-			})
-			return
-		}
-		c.JSON(http.StatusOK, gin.H{
-			"s": 1,
-		})
-	})
+
+	// APP APP基本認證 過了APP才能去要JWT token
+	// approuter.GinRouterGroup.POST("/init", func(c *gin.Context) {
+	// 	s := c.PostForm("hash")
+	// 	if s != app.SFunc.APIAuthorized() {
+	// 		c.JSON(http.StatusOK, gin.H{
+	// 			"s":       -9,
+	// 			"errCode": app.SFunc.DumpErrorCode(mainCodePrefix),
+	// 			"errMsg":  errors.New("unauthorized").Error(),
+	// 		})
+	// 		return
+	// 	}
+	// 	c.JSON(http.StatusOK, gin.H{
+	// 		"s": 1,
+	// 	})
+	// })
+	approuter.GinRouterGroup.POST("/init", app.SFunc.Init)
 
 	// 用戶註冊
 	approuter.GinRouterGroup.POST("/signup", member.NewMemberReg)

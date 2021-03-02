@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
@@ -22,6 +23,9 @@ import (
 type IDump interface {
 	DumpAnything(i interface{})
 }
+
+// ErrCodePrefix 錯誤代碼追蹤
+var ErrCodePrefix = "APP00"
 
 // SooonFunc ...
 type SooonFunc struct {
@@ -119,4 +123,30 @@ func (s *SooonFunc) Localizer(c *gin.Context, outputMsg string) string {
 		MessageID: outputMsg,
 	})
 	return translation
+}
+
+// Init APP基本認證 過了APP才能去要JWT token
+// @Summary  APP基本認證 過了APP才能去要JWT token
+// @Tags App
+// @param hash formData string true "sha256"
+// @version 1.0
+// @produce json
+// @Success 200 {object} initSuccessResponse "登入紀錄"
+// @Failure 400 {object} apiFailResponse
+// @host localhost:3000
+// @Router /init [post]
+func (s *SooonFunc) Init(c *gin.Context) {
+	h := c.PostForm("hash")
+	if h != s.APIAuthorized() {
+		c.JSON(http.StatusBadRequest, apiFailResponse{
+			S:       -9,
+			ErrCode: SFunc.DumpErrorCode(ErrCodePrefix),
+			ErrMsg:  errors.New("unauthorized").Error(),
+		})
+
+		return
+	}
+	c.JSON(http.StatusOK, initSuccessResponse{
+		S: 1,
+	})
 }

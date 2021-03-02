@@ -17,8 +17,8 @@ import (
 // signupCodePrefix 錯誤代碼追蹤
 const signupCodePrefix = "MEM00"
 
-// RegInfo POST參數
-type RegInfo struct {
+// regInfo POST參數
+type regInfo struct {
 	RegEmail string `form:"email" binding:"required"`
 	Pwd      string `form:"p" binding:"required"` /* 密碼 */
 	// RegNickName string `form:"nickName" binding:"required"`
@@ -44,7 +44,7 @@ type RegInfo struct {
 // @host localhost:3000
 // @Router /signup [post]
 func NewMemberReg(c *gin.Context) {
-	var reginfo RegInfo
+	var reginfo regInfo
 	err := c.ShouldBind(&reginfo)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiFailResponse{
