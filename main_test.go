@@ -14,15 +14,15 @@ import (
 	_ "github.com/joho/godotenv/autoload"
 )
 
-func TestPingRoute(t *testing.T) {
+func TestPlayground(t *testing.T) {
 	// The setupServer method, that we previously refactored
 	// is injected into a test server
 	ts := httptest.NewServer(setupServer())
 	// Shut down the server and block until all requests have gone through
 	defer ts.Close()
 
-	// Make a request to our server with the {base url}/ping
-	resp, err := http.Get(fmt.Sprintf("%s/ping", ts.URL))
+	// Make a request to our server with the {base url}/ping ts.URL like http://127.0.0.1:57040
+	resp, err := http.Get(fmt.Sprintf("%s/dev/playground", ts.URL))
 
 	if err != nil {
 		t.Fatalf("Expected no error, got %v", err)

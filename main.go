@@ -39,8 +39,7 @@ const mainCodePrefix = "MA00"
 // @host 127.0.0.1:3000
 // @BasePath /dev
 func main() {
-	setupServer()
-	// gracefulShutDown()
+	setupServer().Run(":3000")
 }
 
 // @Summary Playground API
