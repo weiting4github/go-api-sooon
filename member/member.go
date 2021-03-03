@@ -26,7 +26,3 @@ func NewMember(id uint64, email string) *Member {
 		email: email,
 	}
 }
-
-// func (m *Member) Text() string {
-// 	return string(m.id)
-// }

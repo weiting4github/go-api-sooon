@@ -119,7 +119,8 @@ func Login(c *gin.Context) {
 
 	go func() {
 		_memberID := <-ch
-		{ // 更新sessions
+		// SESSIONS
+		{
 			session := sessions.Default(c)
 			lang := c.Request.FormValue("lang")
 			if len(lang) <= 0 {
