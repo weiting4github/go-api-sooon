@@ -8,12 +8,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"go-api-sooon/app"
-	"go-api-sooon/config"
 
-	"go-api-sooon/models"
+	"github.com/weiting4github/go-api-sooon/app"
+
+	"github.com/weiting4github/go-api-sooon/config"
+
 	"net/http"
 	"time"
+
+	"github.com/weiting4github/go-api-sooon/models"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"

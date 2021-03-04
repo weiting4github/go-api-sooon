@@ -3,7 +3,8 @@ package myplayground
 
 import (
 	"fmt"
-	"go-api-sooon/app"
+
+	"github.com/weiting4github/go-api-sooon/app"
 )
 
 type play struct {

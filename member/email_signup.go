@@ -5,10 +5,11 @@ package member
 import (
 	"crypto/sha256"
 	"fmt"
-	"go-api-sooon/app"
-	"go-api-sooon/models"
 	"net/http"
 	"time"
+
+	"github.com/weiting4github/go-api-sooon/app"
+	"github.com/weiting4github/go-api-sooon/models"
 
 	"github.com/gin-gonic/gin"
 )
