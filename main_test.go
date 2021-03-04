@@ -6,11 +6,12 @@ package main
 
 import (
 	"fmt"
-	_ "go-api-sooon/docs"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	_ "github.com/weiting4github/go-api-sooon/docs"
 
 	_ "github.com/joho/godotenv/autoload"
 )

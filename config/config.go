@@ -3,7 +3,6 @@ package config
 
 import (
 	"fmt"
-	"go-api-sooon/app"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"    // for "database/sql"
 	_ "github.com/joho/godotenv/autoload" // 環境變數套件os.Getenv
+	"github.com/weiting4github/go-api-sooon/app"
 )
 
 const configCodePrefix = "CNF00"
