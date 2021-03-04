@@ -110,7 +110,7 @@ func setupServer() *gin.Engine {
 		approuter.GinRouterGroup.GET("/member/:action/:mid", member.Do)
 	}
 	// approuter.GinEngine.Run(":3000")
-	gracefulShutDown()
+	// gracefulShutDown()
 	return approuter.GinEngine
 }
 
