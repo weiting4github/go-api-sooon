@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	_ "github.com/weiting4github/go-api-sooon/docs"
+	_ "github.com/wtg42/go-api-sooon/docs"
 
 	_ "github.com/joho/godotenv/autoload"
 )

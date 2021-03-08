@@ -1,4 +1,4 @@
-module github.com/weiting4github/go-api-sooon
+module github.com/wtg42/go-api-sooon
 
 go 1.16
 

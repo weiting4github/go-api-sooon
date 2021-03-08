@@ -4,7 +4,7 @@ package myplayground
 import (
 	"fmt"
 
-	"github.com/weiting4github/go-api-sooon/app"
+	"github.com/wtg42/go-api-sooon/app"
 )
 
 type play struct {

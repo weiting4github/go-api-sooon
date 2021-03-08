@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/weiting4github/go-api-sooon/app"
-	"github.com/weiting4github/go-api-sooon/models"
+	"github.com/wtg42/go-api-sooon/app"
+	"github.com/wtg42/go-api-sooon/models"
 
 	"github.com/gin-gonic/gin"
 )
