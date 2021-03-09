@@ -3,7 +3,6 @@ package member
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -29,7 +28,6 @@ const detailCodePrefix = "MEM02"
 // @host localhost:3000
 // @Router /member/{action}/{mid} [get]
 func Do(c *gin.Context) {
-	fmt.Println(c.Param("action"))
 	switch c.Param("action") {
 	// 個人檔案
 	case "profile":
@@ -80,7 +78,7 @@ func Do(c *gin.Context) {
 		// log to stdout
 		models.DBM.SQLDebug(memberID)
 
-		var logs []historyLog
+		var logs = []historyLog{}
 		for rows.Next() {
 			var log historyLog
 			if err := rows.Scan(&log.MemberID, &log.Device, &log.LoginTs, &log.IP, &log.CreateDt); err != nil {
@@ -100,5 +98,12 @@ func Do(c *gin.Context) {
 			Data: logs,
 		})
 		return
+	default:
+		c.JSON(http.StatusOK, historySuccessResponse{
+			S:    1,
+			Data: []historyLog{},
+		})
+		return
 	}
+
 }
