@@ -42,48 +42,6 @@ func main() {
 	setupServer()
 }
 
-// @Summary Playground API
-// @Tags Test
-// @version 1.0
-// @produce application/json
-// @Success 200 "{"s":1}"
-// @host localhost:3000
-// @Router /playground [get]
-func playground(c *gin.Context) {
-
-	// ip := net.ParseIP("2001:db8::68")
-	// bint := ipv6ToInt(ip)
-	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
-
-	// 陣列值2個數字相加等於4 且是唯一解
-	// r := my.TwoSum([]int{3, 4, 1, 2}, 4)
-	// fmt.Println(r)
-
-	// 陣列反轉
-	// {
-	// 	my.Play.ArrReverse([]int{6, 4, 3, 1})
-	// }
-
-	// 費式數列
-	// for i := 0; i < 20; i++ {
-	// 	app.DumpAnyLikeABoss(my.Play.Fibonacci1()(i))
-	// }
-
-	// store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
-	// approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))
-	// session := sessions.Default(c)
-	// session.Set("hello", "world")
-	// session.Set("mycookie", "yes done!")
-	// // session.Clear()
-	// session.Save()
-
-	c.JSON(http.StatusOK, gin.H{
-		"s": 1,
-	})
-	return
-
-}
-
 func setupServer() *gin.Engine {
 	// PLAYGROUND TEST YOUR CODE
 	approuter.GinRouterGroup.GET("/playground", playground)
@@ -153,4 +111,46 @@ func gracefulShutDown() {
 		fmt.Println("Graceful Shutdown start c.Done()")
 		close(ch)
 	}
+}
+
+// @Summary Playground API
+// @Tags Test
+// @version 1.0
+// @produce application/json
+// @Success 200 "{"s":1}"
+// @host localhost:3000
+// @Router /playground [get]
+func playground(c *gin.Context) {
+
+	// ip := net.ParseIP("2001:db8::68")
+	// bint := ipv6ToInt(ip)
+	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
+
+	// 陣列值2個數字相加等於4 且是唯一解
+	// r := my.TwoSum([]int{3, 4, 1, 2}, 4)
+	// fmt.Println(r)
+
+	// 陣列反轉
+	// {
+	// 	my.Play.ArrReverse([]int{6, 4, 3, 1})
+	// }
+
+	// 費式數列
+	// for i := 0; i < 20; i++ {
+	// 	app.DumpAnyLikeABoss(my.Play.Fibonacci1()(i))
+	// }
+
+	// store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
+	// approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))
+	// session := sessions.Default(c)
+	// session.Set("hello", "world")
+	// session.Set("mycookie", "yes done!")
+	// // session.Clear()
+	// session.Save()
+
+	c.JSON(http.StatusOK, gin.H{
+		"s": 1,
+	})
+	return
+
 }
