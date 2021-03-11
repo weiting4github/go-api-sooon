@@ -2,4 +2,4 @@
 A Go Web API demo using the Gin framework
 
 # Installation
-`$ go get -u github.com/weiting4github/go-api-sooon`
+`$ go get -u github.com/wtg42/go-api-sooon`
