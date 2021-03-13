@@ -18,17 +18,17 @@ type DBManager struct {
 	prepareStr string
 }
 
-const modelsCodePrefix = "MOD00"
-
 func init() {
 	dbLoginUser := os.Getenv("DB_USER")
 	dbLoginPassWord := os.Getenv("DB_PWD")
 	// fmt.Printf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME"))
 	// 這只是連結還沒開始連線，可以先用Ping做測試連線
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s)/%s", dbLoginUser, dbLoginPassWord, os.Getenv("DB_HOSTNAME"), os.Getenv("DB_NAME")))
+	if err != nil {
+		panic(err.Error())
+	}
 	err = db.Ping()
 	if err != nil {
-		fmt.Printf("DBConnect: %s", err.Error())
 		panic(err.Error())
 	}
 	l := log.New(os.Stdout, "[sql]", log.LstdFlags)
