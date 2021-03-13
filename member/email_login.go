@@ -68,13 +68,12 @@ func Login(c *gin.Context) {
 	go func() {
 		{
 			models.DBM.SetQuery("SELECT `member_id`, `email`, `pwd`, `salt` FROM `sooon_db`.`member` WHERE `email` = ?")
-			stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
-			defer stmt.Close()
+			stmt, err := models.DBM.Prepare()
 			if err != nil {
 				errch <- err // 錯誤跳出
 				return
 			}
-
+			defer stmt.Close()
 			err = stmt.QueryRow(loginBody.Email).Scan(&memberID, &email, &pwd, &salt)
 			if err != nil {
 				errch <- err // 錯誤跳出
@@ -102,7 +101,7 @@ func Login(c *gin.Context) {
 		// 更新使用者登入Log
 		{
 			models.DBM.SetQuery("INSERT INTO `sooon_db`.`member_login_log`(`member_id`, `client_device`, `login_ts`, `ip`) VALUES (?, ?, ?, ?)")
-			stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
+			stmt, err := models.DBM.Prepare()
 			if err != nil {
 				// 非致命錯誤 可以寄信通知或是寫入redis做定期排查
 				fmt.Println(app.SFunc.DumpErrorCode(loginCodePrefix) + err.Error())

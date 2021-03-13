@@ -69,3 +69,7 @@ func (m *DBManager) SetQuery(query string) {
 func (m *DBManager) GetQuery() string {
 	return m.prepareStr
 }
+
+func (m *DBManager) Prepare() (*sql.Stmt, error) {
+	return m.DB.Prepare(m.GetQuery())
+}

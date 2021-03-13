@@ -45,16 +45,16 @@ func Do(c *gin.Context) {
 
 		// 自己才能看自己紀錄
 		chkMemberID, _ := strconv.ParseInt(memberID, 10, 64)
-		if memberIDSelf, ok := c.Get("memberID"); ok == false || memberIDSelf.(int64) != chkMemberID {
+		if memberIDSelf, ok := c.Get("memberID"); !ok || memberIDSelf.(int64) != chkMemberID {
 			c.JSON(http.StatusBadRequest, apiFailResponse{
 				S:       -9,
 				ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
-				ErrMsg:  errors.New("Session Invalid").Error(),
+				ErrMsg:  errors.New("session invalid").Error(),
 			})
 			return
 		}
 		models.DBM.SetQuery("SELECT * FROM `sooon_db`.`member_login_log` WHERE `member_id` = ?")
-		stmt, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
+		stmt, err := models.DBM.Prepare()
 		defer stmt.Close()
 		if err != nil {
 			c.JSON(http.StatusBadRequest, apiFailResponse{

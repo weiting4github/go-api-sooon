@@ -40,7 +40,7 @@ func NewMemberReg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiFailResponse{
 			S:       -9,
-			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrCode: app.SFunc.DumpErrorCode(signupCodePrefix),
 			ErrMsg:  err.Error(),
 		})
 		return
@@ -54,22 +54,21 @@ func NewMemberReg(c *gin.Context) {
 	hashPWD := fmt.Sprintf("%x", h.Sum(nil))
 
 	models.DBM.SetQuery("INSERT IGNORE INTO `sooon_db`.`member`(`email`, `pwd`, `salt`, `ip_field`, `ipv4v6`, `create_ts`) VALUES(?, ?, ?, ?, INET6_ATON(?), ?)")
-	stmtIns, err := models.DBM.DB.Prepare(models.DBM.GetQuery())
-	defer stmtIns.Close()
+	stmtIns, err := models.DBM.Prepare()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiFailResponse{
 			S:       -9,
-			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrCode: app.SFunc.DumpErrorCode(signupCodePrefix),
 			ErrMsg:  err.Error(),
 		})
 		return
 	}
-
+	defer stmtIns.Close()
 	result, err := stmtIns.Exec(reginfo.RegEmail, hashPWD, salt, c.ClientIP(), c.ClientIP(), time.Now().Unix())
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiFailResponse{
 			S:       -9,
-			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrCode: app.SFunc.DumpErrorCode(signupCodePrefix),
 			ErrMsg:  err.Error(),
 		})
 		return
@@ -81,7 +80,7 @@ func NewMemberReg(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, apiFailResponse{
 			S:       -9,
-			ErrCode: app.SFunc.DumpErrorCode(detailCodePrefix),
+			ErrCode: app.SFunc.DumpErrorCode(signupCodePrefix),
 			ErrMsg:  err.Error(),
 		})
 		return
