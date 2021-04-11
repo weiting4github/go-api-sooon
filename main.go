@@ -18,6 +18,7 @@ import (
 	"github.com/wtg42/go-api-sooon/approuter"
 	"github.com/wtg42/go-api-sooon/config"
 	"github.com/wtg42/go-api-sooon/member"
+	"github.com/wtg42/go-api-sooon/myplayground"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -126,8 +127,8 @@ func playground(c *gin.Context) {
 	// fmt.Println(net.IPv4(byte("192"), byte("192"), byte("192"), byte("192")))
 
 	// 陣列值2個數字相加等於4 且是唯一解
-	// r := my.TwoSum([]int{3, 4, 1, 2}, 4)
-	// fmt.Println(r)
+	r := myplayground.TwoSum([]int{3, 4, 1, 2}, 4)
+	fmt.Println(r)
 
 	// 陣列反轉
 	// {
@@ -135,9 +136,9 @@ func playground(c *gin.Context) {
 	// }
 
 	// 費式數列
-	// for i := 0; i < 20; i++ {
-	// 	app.DumpAnyLikeABoss(my.Play.Fibonacci1()(i))
-	// }
+	for i := 0; i < 20; i++ {
+		myplayground.Play.Fibonacci1()(i)
+	}
 
 	// store := cookie.NewStore([]byte(os.Getenv("SESSION_KEY")))
 	// approuter.GinRouterGroup.Use(sessions.Sessions("testSessions", store))

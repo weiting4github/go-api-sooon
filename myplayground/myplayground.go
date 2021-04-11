@@ -33,14 +33,14 @@ func init() {
 // key, value對調放進map, 目標值-陣列value的差值 存在於 map的key 就可以取得 index
 func TwoSum(nums []int, target int) []int {
 
-	revereMap := make(map[int]int)
-
+	reverse := make(map[int]int)
 	for i := 0; i < len(nums); i++ {
-		if j, ok := revereMap[target-nums[i]]; ok {
+		if j, ok := reverse[target-nums[i]]; ok {
 			return []int{j, i}
 		}
-		revereMap[nums[i]] = i
+		reverse[nums[i]] = i
 	}
+
 	// mymap := make(map[int]int)
 	// for i := 0; i < len(nums); i++ {
 	// 	j, ok := mymap[target-nums[i]] // target-nums[i] 差值即是答案取得j即是原始num的index
